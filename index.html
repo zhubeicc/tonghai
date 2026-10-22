@@ -1185,11 +1185,25 @@
         scrollWheelZoom: false
       });
 
-      // 底圖: OpenStreetMap
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      // 底圖 1: CartoDB Voyager (清爽、高速且完全不擋連線)
+      const streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
         maxZoom: 19
       }).addTo(leafletMap);
+
+      // 底圖 2: ESRI 高解析度衛星空照圖
+      const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics',
+        maxZoom: 19
+      });
+
+      // 圖層切換控制項 (右上角)
+      const baseMaps = {
+        "🗺️ 清爽街道圖": streetLayer,
+        "🛰️ 衛星空照圖": satelliteLayer
+      };
+      L.control.layers(baseMaps, null, { position: 'topright' }).addTo(leafletMap);
 
       // 繪製璞玉計畫（台知園區）447公頃規劃邊界
       const puyiPolygon = L.polygon(PUYI_BOUNDARY_COORDS, {
