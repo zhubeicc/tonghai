@@ -1094,18 +1094,10 @@
     }
 
     function init() {
-      renderMapSpotsGrid();, 150);
-      }
+      renderMapSpotsGrid();
       populateSpotSelector();
-      loadSpot(0);
-    }
-
-else {
-        wrapMyMap.classList.remove('hidden');
-        wrapLeaflet.classList.add('hidden');
-        btnMyMap.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-gray-900 text-white shadow-sm transition";
-        btnLeaflet.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-white text-gray-700 hover:bg-gray-200 transition";
-      }
+      changeSpot(0);
+      updatePhenology();
     }
 
     function switchTab(tabId) {
