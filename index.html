@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>竹北社區大學-東海地方學</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Pannellum 360 Viewer CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+
+  <!-- Google Fonts: Lato & Noto Sans TC (原 Google Sites 字體) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Lato', 'Noto Sans TC', sans-serif; background-color: #ffffff; color: #333333; }
+    
+    /* 原站 Google Sites 經典頂部導覽列風格 */
+    .site-nav { background: #ffffff; border-bottom: 1px solid #e0e0e0; }
+    .nav-link { color: #555555; font-weight: 500; padding: 18px 14px; display: inline-block; transition: all 0.2s; font-size: 15px; border-bottom: 3px solid transparent; }
+    .nav-link:hover { color: #111111; }
+    .nav-link.active { color: #111111; font-weight: 700; border-bottom: 3px solid #333333; }
+
+    /* 原站 Google Sites 標頭橫幅 Banner */
+    .site-banner {
+      position: relative;
+      width: 100%;
+      min-height: 440px;
+      aspect-ratio: 2.2 / 1;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      text-align: left;
+      color: #ffffff;
+      padding: 48px 48px;
+    }
+    /* 不調暗，保留原圖原本明亮鮮豔的自然色彩，標題靠左上對齊 */
+    .banner-title {
+      position: relative;
+      z-index: 10;
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.75), 0 0 3px rgba(0,0,0,0.9);
+      margin: 0;
+    }
+    @media (max-width: 768px) {
+      .site-banner { min-height: 260px; aspect-ratio: auto; padding: 24px 20px; }
+      .banner-title { font-size: 26px; }
+    }
+
+    /* 原站卡片與內文風格 */
+    .content-box { background: #ffffff; }
+    .card-border { border: 1px solid #e5e7eb; border-radius: 8px; transition: all 0.2s ease; background: #ffffff; }
+    .card-border:hover { box-shadow: 0 6px 16px -2px rgba(0,0,0,0.08); border-color: #cbd5e1; }
+    
+    .term-btn.active { background-color: #333333; color: #ffffff; border-color: #111111; font-weight: 700; }
+    .term-btn.disabled { opacity: 0.35; cursor: not-allowed; border-style: dashed; }
+    
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      background: #333333;
+      color: #ffffff;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-action:hover { background: #555555; }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 18px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid #4b5563;
+      color: #374151;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-outline:hover { background: #f3f4f6; color: #111827; }
+
+    .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- 1. 頂部導覽列 (Google Sites 原版選單配色) -->
+  <header class="sticky top-0 z-50 site-nav shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+      <div class="flex items-center space-x-2 py-3 cursor-pointer" onclick="switchTab('home')">
+        <span class="text-xl font-bold tracking-tight text-gray-900">竹北社區大學-東海地方學</span>
+      </div>
+      
+      <!-- 桌面端完整選單 -->
+      <nav class="hidden md:flex items-center space-x-1">
+        <button onclick="switchTab('home')" id="nav-home" class="nav-link active">首頁</button>
+        <button onclick="switchTab('map')" id="nav-map" class="nav-link">GIS</button>
+        <button onclick="switchTab('aerial')" id="nav-aerial" class="nav-link">空拍</button>
+        <button onclick="switchTab('spots')" id="nav-spots" class="nav-link">全景 (24節氣時光機)</button>
+        <button onclick="switchTab('water')" id="nav-water" class="nav-link">舊港圳</button>
+        <button onclick="switchTab('trails')" id="nav-trails" class="nav-link">犁頭山溪</button>
+        <button onclick="switchTab('food')" id="nav-food" class="nav-link">田間美食</button>
+      </nav>
+
+      <!-- 行動裝置下拉選單 -->
+      <div class="md:hidden py-3">
+        <select onchange="switchTab(this.value)" class="bg-gray-50 text-gray-800 text-sm px-3 py-1.5 rounded border border-gray-300">
+          <option value="home">首頁</option>
+          <option value="map">GIS</option>
+          <option value="aerial">空拍</option>
+          <option value="spots">全景 (24節氣時光機)</option>
+          <option value="water">舊港圳</option>
+          <option value="trails">犁頭山溪</option>
+          <option value="food">田間美食</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. 主內容頁籤切換區域 -->
+  <main class="flex-1">
+
+    <!-- ==================== TAB 1: 首頁 ==================== -->
+    <div id="tab-home" class="tab-pane">
+      <!-- 標頭圖 1: 首頁正宗標頭 -->
+      <div class="site-banner" style="background-image: url('https://lh3.googleusercontent.com/d/1KrLNfI6tgsIiNW-urGjpRFqGYTN8OaXx=w2000');">
+        <h1 class="banner-title">竹北社區大學-東海地方學</h1>
+      </div>
+
+      <div class="max-w-5xl mx-auto px-4 py-12 space-y-12 content-box">
+        <!-- 24 節氣 360° 時光機 核心亮點入口 (2025-2026 拍攝紀錄) -->
+        <div class="card-border p-6 md:p-8 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-xl shadow-lg border border-gray-700 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-700/80 pb-4">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+              <h2 class="text-2xl font-bold tracking-tight text-white">24 節氣 360° 地景時光機</h2>
+            </div>
+            <span class="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+              📅 觀測期程：2025 - 2026 年長時地景拍攝紀錄
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+            <div class="lg:col-span-2 space-y-3">
+              <p class="text-gray-300 text-sm md:text-base leading-relaxed">
+                本計畫跨越 <strong>2025 年冬至至 2026 年秋分</strong>，於東海客庄特定農業區遴選 8 大關鍵觀測定點（涵蓋頭前溪畔、水圳核心區與田中央）。
+                結合<strong>「無人機空拍 360° 環景」</strong>與<strong>「地面 360° 環景」</strong>雙視角，完整典藏插秧、分櫱、抽穗、金黃收割到休耕綠肥的二十四節氣地景光影變化。
+              </p>
+              <div class="flex flex-wrap gap-2 text-xs text-gray-400 pt-1">
+                <span class="bg-gray-800 px-2.5 py-1 rounded border border-gray-700">8大觀測定點</span>
+                <span class="bg-gray-800 px-2.5 py-1 rounded border border-gray-700">空拍/地面雙視角</span>
+                <span class="bg-gray-800 px-2.5 py-1 rounded border border-gray-700">四季稻作農事物候</span>
+                <span class="bg-gray-800 px-2.5 py-1 rounded border border-gray-700">745張高畫質平面特寫</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-3 justify-center">
+              <button onclick="switchTab('spots')" class="w-full py-3.5 px-6 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base shadow-md transition flex items-center justify-center gap-2">
+                <span>進入 24 節氣時光機</span>
+                <span>↗</span>
+              </button>
+              <button onclick="switchTab('map')" class="w-full py-2.5 px-6 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold text-sm border border-gray-600 transition text-center">
+                查看 GIS 主地圖定位
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 東海窟 -->
+        <div class="space-y-4">
+          <h2 class="text-2xl font-bold text-gray-900 border-l-4 border-gray-800 pl-3">東海窟</h2>
+          <div class="text-gray-700 leading-relaxed text-base space-y-3">
+            <p>
+              「東海」在頭前溪未施治水工程前溪流四溢分支，在「東海」之西南形成一處很大面積潭窟，潭水充沛浩瀚似大海，六家當時係基層行政中心居民較多，此潭窟位於六家之東方，因此民眾稱之為<strong>「東海窟」</strong>而得名。東海里位於竹北市中心東南端位置，距市中心約八公里，東鄰芎林鄉下山村以東山溪為界，西與隘口里、十興里相連、北以舊港圳成天然地界與十興里犁頭山下為鄰，南隔頭前溪與竹東鎮員山里相望，境內有舊港圳流經東海窟、三崁店。
+            </p>
+            <p class="text-gray-500 text-sm bg-gray-50 p-4 rounded-lg border border-gray-200">
+              (東海窟：早期，頭前溪尚未進行治水工程前，溪流四溢分支，使當地經常積水，形似深潭，因而稱之為「東海窟」。「東海」意味著此地在主要聚落的東側，「海」可能是客語「溪」的訛傳而誤寫，「窟」則是先民對低窪水潭的稱呼。)
+            </p>
+            <p>
+              東海的住民絕大部分是<strong>客家人</strong>，具有刻苦耐勞、勤奮節儉的精神，東海里編有十六個鄰，二十年前，新竹縣府意欲重劃竹北東海地區與芎林相連之地，名為<strong>璞玉計畫</strong>，故亦有人稱此地區為璞玉重劃區，因璞玉計畫沒有實際通過，政府又提出「台灣知識經濟旗艦園區」重啟此地區的開發案，雖至今仍未定論，但趁現在尚未開發前，可針對此地流域風土寫下紀錄。
+            </p>
+          </div>
+        </div>
+
+        <!-- 雙欄踏查按鈕區 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+          <!-- 舊港圳引言 -->
+          <div class="card-border p-6 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <h3 class="text-xl font-bold text-gray-900">舊港圳</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                舊港圳引自新竹主要河流「頭前溪」的溪水，流經六家地區北側，灌溉水坑口、十興、犁頭山、安溪寮附近田園，最後匯入豆子埔溪。
+              </p>
+            </div>
+            <div>
+              <button onclick="switchTab('water')" class="btn-action w-full">深入踏查 舊港圳 ↗</button>
+            </div>
+          </div>
+
+          <!-- 犁頭山溪引言 -->
+          <div class="card-border p-6 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <h3 class="text-xl font-bold text-gray-900">犁頭山溪</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                犁頭山溪發源於新竹縣芎林鄉，為天然水脈，位於竹北流域的上游，因深受氣候變化影響，附近農田無法完全仰賴犁頭山溪的水源。
+              </p>
+            </div>
+            <div>
+              <button onclick="switchTab('trails')" class="btn-action w-full">深入踏查 犁頭山溪 ↗</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 三大精選快速導覽 -->
+        <div class="pt-6 border-t border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+              <div class="font-bold text-gray-900 text-base">【舊港圳】核心導覽</div>
+              <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                <li>百年水礱間</li>
+                <li>瑞招農場</li>
+                <li>智慧稻田</li>
+                <li>豐禾田</li>
+              </ul>
+              <div class="pt-2">
+                <button onclick="switchTab('water')" class="text-xs font-bold text-gray-800 hover:underline">閱讀完整故事 →</button>
+              </div>
+            </div>
+
+            <div class="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+              <div class="font-bold text-gray-900 text-base">【犁頭山溪】核心導覽</div>
+              <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                <li>芎林金城武樹</li>
+                <li>璞玉自然農場</li>
+                <li>月桃窩古道</li>
+              </ul>
+              <div class="pt-2">
+                <button onclick="switchTab('trails')" class="text-xs font-bold text-gray-800 hover:underline">閱讀完整故事 →</button>
+              </div>
+            </div>
+
+            <div class="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+              <div class="font-bold text-gray-900 text-base">【田間美食】在地搜羅</div>
+              <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                <li>樂樂長甘蔗屋</li>
+                <li>有田咖啡</li>
+                <li>覓境咖啡</li>
+                <li>小藜ㄇㄞˋ本丸</li>
+              </ul>
+              <div class="pt-2">
+                <button onclick="switchTab('food')" class="text-xs font-bold text-gray-800 hover:underline">查看美食地圖 →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: GIS (空間地圖) ==================== -->
+    <div id="tab-map" class="tab-pane hidden">
+      <!-- 標頭圖 2: GIS 專用標頭 -->
+      <div class="site-banner" style="background-image: url('https://lh3.googleusercontent.com/d/1Z9VpkAPY5TRdY0esWH69lrlglQdA5hW1=w2000');">
+        <h1 class="banner-title">GIS 空間地理資訊</h1>
+      </div>
+
+      <div class="max-w-6xl mx-auto px-4 py-10 space-y-8 content-box">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">走讀東海 GIS 主地圖</h2>
+          <p class="text-gray-500 text-sm mt-1">整合 Google 我的地圖（ID：12ZHd2tzGFirX3w6oQZ21Tb2FEZNJCDE），收錄完整水圳灌溉動線與踏查點位</p>
+        </div>
+
+        <!-- 滿版地圖嵌入 -->
+        <div class="rounded-lg overflow-hidden border border-gray-300 shadow-md">
+          <iframe src="https://www.google.com/maps/d/embed?mid=12ZHd2tzGFirX3w6oQZ21Tb2FEZNJCDE&ehbc=2E312F" width="100%" height="560" class="w-full"></iframe>
+        </div>
+
+        <!-- 8 大定點圖卡快速索引 -->
+        <div class="space-y-4 pt-4">
+          <h3 class="text-xl font-bold text-gray-900 border-l-4 border-gray-800 pl-3">8 大定點快速索引（點擊跳轉 24 節氣時光機）</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="map-spots-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: 空拍 ==================== -->
+    <div id="tab-aerial" class="tab-pane hidden">
+      <!-- 標頭圖 3: 空拍專用標頭 -->
+      <div class="site-banner" style="background-image: url('https://lh3.googleusercontent.com/d/1jrsDZqOu5Mq5v3G3ds3Mq-MHYc_Kcais=w2000');">
+        <h1 class="banner-title">空拍影像典藏</h1>
+      </div>
+
+      <div class="max-w-5xl mx-auto px-4 py-10 space-y-8 content-box">
+        <div class="space-y-3">
+          <h2 class="text-2xl font-bold text-gray-900">無人機空拍俯瞰</h2>
+          <p class="text-gray-700 leading-relaxed">
+            透過空拍視角，俯瞰東海特定農業區的整齊稻田、蜿蜒水圳以及與竹北高鐵特定區的高樓天際線對比。
+            長時記錄在不同節氣下，水田灌水如鏡面、秧苗翠綠、抽穗到金黃收割的壯闊地景變化。
+          </p>
+        </div>
+        <div class="p-6 bg-gray-50 border border-gray-200 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div>
+            <div class="font-bold text-gray-900 text-lg">觀看 24 節氣空拍 360° 互動全景</div>
+            <div class="text-gray-600 text-sm mt-0.5">進入時光機，點選右上角「🚁 空拍 360°」，即可拖曳旋轉欣賞鳥瞰全景</div>
+          </div>
+          <button onclick="switchTab('spots'); switchViewerMode('aerial');" class="btn-action flex-shrink-0">開啟空拍時光機 ↗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: 全景 (24節氣時光機) ==================== -->
+    <div id="tab-spots" class="tab-pane hidden">
+      <!-- 標頭圖 4: 全景專用標頭 -->
+      <div class="site-banner" style="background-image: url('https://lh3.googleusercontent.com/d/1L-0aCEmrJUQ2ZfjrGOkLOJS-R621BIs9=w2000');">
+        <h1 class="banner-title">全景地景誌 (360° 時光機)</h1>
+      </div>
+
+      <div class="max-w-6xl mx-auto px-4 py-8 space-y-6 content-box">
+
+        <!-- 計畫緣起與行動團隊沿革 -->
+        <div class="card-border p-6 md:p-8 bg-gray-50 rounded-xl space-y-6 border border-gray-200">
+          <div class="border-b border-gray-200 pb-3 flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-900 border-l-4 border-gray-800 pl-3">
+              計畫沿革：從河川巡守到立體水文地景數位典藏
+            </h2>
+            <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
+              📅 當前建檔典藏成果：2025 - 2026 年度
+            </span>
+          </div>
+
+          <div class="text-gray-700 text-sm md:text-base leading-relaxed space-y-3">
+            <p>
+              竹北市近年來受惠於新竹科學園區與縣政特區開發，人口暴增至20萬人，城市發展速度極快，外來人口非常多，導致大量早期農村地景迅速消逝，城市歷史記憶面臨斷裂危機。
+            </p>
+            <p>
+              為使即將消逝的在地地景與知識獲得搶救與數位保存，鎖定面臨璞玉計畫的開發危機的竹北市東海里，其珍貴的水文地景與農作文化即將消逝，搶救紀錄具有極高的時代緊迫性與不可逆性。本校河川巡守隊從傳統的水質檢測轉型為<strong>「水文地景紀錄行動團隊」</strong>。112年，我們以「節氣田野調查」為主軸，透過地理資訊系統（GIS）與水利設施節點，系統性地紀錄周遭農作景觀與在地水文化發展。
+            </p>
+            <p>
+              為提升紀錄成果的專業性與傳播性，113年巡守隊成員接受了進階培訓，旨在數位建構東海里的立體影像地景。行動團隊分為三個專業小組分工合作：
+            </p>
+          </div>
+
+          <!-- 三大專業行動小組表格 -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+              <thead>
+                <tr class="bg-gray-100 text-gray-800 font-bold border-b border-gray-200">
+                  <th class="py-3 px-4 border-r border-gray-200 w-1/4">行動小組</th>
+                  <th class="py-3 px-4 border-r border-gray-200 w-1/2">核心技術與任務</th>
+                  <th class="py-3 px-4">數據匯流與成果產出</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 text-gray-700">
+                <tr class="hover:bg-gray-50 transition">
+                  <td class="py-3.5 px-4 font-bold text-gray-900 border-r border-gray-200 flex items-center gap-2">
+                    <span>🚁</span> 空拍紀錄組
+                  </td>
+                  <td class="py-3.5 px-4 border-r border-gray-200">
+                    運用空拍技術，進行大範圍的地景俯瞰與動態紀錄。
+                  </td>
+                  <td class="py-3.5 px-4 text-gray-600">
+                    上傳至 YouTube（搭配音樂與文字），呈現宏觀視野。
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition">
+                  <td class="py-3.5 px-4 font-bold text-gray-900 border-r border-gray-200 flex items-center gap-2">
+                    <span>📷</span> 全景相機記錄組
+                  </td>
+                  <td class="py-3.5 px-4 border-r border-gray-200">
+                    運用全景攝影技術，進行定點環境細節的 360 度地景捕捉。
+                  </td>
+                  <td class="py-3.5 px-4 text-gray-600">
+                    轉檔並上傳至 GIS 地理資訊系統，進行空間定位與 360° 互動呈現。
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition">
+                  <td class="py-3.5 px-4 font-bold text-gray-900 border-r border-gray-200 flex items-center gap-2">
+                    <span>🗺️</span> GIS 拍照上傳組
+                  </td>
+                  <td class="py-3.5 px-4 border-r border-gray-200">
+                    運用 GIS 系統，進行精確的節點定位、拍照與基礎文字說明。
+                  </td>
+                  <td class="py-3.5 px-4 text-gray-600">
+                    上傳至 GIS 地理資訊系統，進行空間定位與大批田野特寫資料建檔。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 2025-2026 建檔期程說明 -->
+          <div class="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-xs md:text-sm leading-relaxed flex items-start gap-3">
+            <span class="text-base flex-shrink-0">📌</span>
+            <div>
+              <strong>成果建檔說明：</strong>
+              本全景地景誌系統目前正式建檔與上線展示之成果為 <strong>2025 - 2026 年度</strong> 之連續觀測紀錄（涵蓋 2025 年冬至至 2026 年秋分），經由三大專業小組協同作業，完整串聯定點 360° 環景、無人機鳥瞰與節氣水文農耕資料庫。
+            </div>
+          </div>
+        </div>
+
+        
+        <!-- 切換點位列 -->
+        <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-bold text-gray-700">選擇定點：</span>
+            <select id="spot-selector" onchange="changeSpot(this.value)" class="bg-white text-gray-900 font-bold text-sm px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-800">
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="btn-mode-aerial" onclick="switchViewerMode('aerial')" class="px-3.5 py-1.5 rounded text-xs font-bold bg-gray-800 text-white transition">🚁 空拍 360°</button>
+            <button id="btn-mode-ground" onclick="switchViewerMode('ground')" class="px-3.5 py-1.5 rounded text-xs font-bold bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 transition">🚶 地面 360°</button>
+          </div>
+        </div>
+
+        <!-- 定點資訊 -->
+        <div class="p-5 border-l-4 border-gray-800 bg-gray-50 rounded-r-lg space-y-2">
+          <div class="flex items-center gap-3">
+            <span id="spot-badge" class="px-2.5 py-0.5 rounded text-xs font-bold bg-gray-800 text-white">定點 01</span>
+            <h2 id="spot-title" class="text-2xl font-bold text-gray-900">覓境咖啡</h2>
+          </div>
+          <p id="spot-intro" class="text-gray-600 text-sm leading-relaxed"></p>
+        </div>
+
+        <!-- 360° 全景視窗 -->
+        <div class="rounded-lg overflow-hidden border border-gray-300 shadow-md bg-black relative">
+          <div class="absolute top-4 left-4 z-20 bg-black/75 backdrop-blur-md px-3 py-1.5 rounded text-xs font-bold text-white">
+            <span id="viewer-term-label">讀取中...</span>
+          </div>
+          <div id="panorama-container" class="w-full h-[520px]"></div>
+
+          <!-- 節氣按鈕列 -->
+          <div class="bg-gray-900 border-t border-gray-800 p-2.5 flex gap-2 overflow-x-auto custom-scrollbar" id="timeline-buttons"></div>
+        </div>
+
+        <!-- 下方雙欄：物候 + 平面特寫 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="p-5 border border-gray-200 rounded-lg bg-gray-50 space-y-2">
+            <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+              <span>🌾</span> 當季物候與農事觀察
+            </h3>
+            <p id="spot-phenology" class="text-gray-600 text-sm leading-relaxed"></p>
+          </div>
+
+          <div class="p-5 border border-gray-200 rounded-lg bg-gray-50 space-y-2">
+            <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+              <span>📸</span> 田野特寫與生態紀錄 (平面 GIS)
+            </h3>
+            <div id="gis-photos-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5 max-h-56 overflow-y-auto custom-scrollbar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: 舊港圳 ==================== -->
+    <div id="tab-water" class="tab-pane hidden">
+      <!-- 標頭圖 5: 舊港圳專用標頭 -->
+      <div class="site-banner" style="background-image: url('https://lh3.googleusercontent.com/d/1lbDaJXTdMIaa0IQtl7tT_BZdlhXgxbEE=w2000');">
+        <h1 class="banner-title">舊港圳</h1>
+      </div>
+
+      <div class="max-w-5xl mx-auto px-4 py-12 space-y-12 content-box">
+        
+        <!-- 【舊港圳與周邊農田】 -->
+        <div class="space-y-4">
+          <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">(西元1746年/乾隆11年)：圳路長5,120公尺</div>
+          <h2 class="text-2xl font-bold text-gray-900 border-l-4 border-gray-800 pl-3">【舊港圳與周邊農田】</h2>
+          
+          <div class="text-gray-700 leading-relaxed text-base space-y-3">
+            <p>
+              <strong>「舊港圳」引自新竹主要河流「頭前溪」的溪水</strong>，流經六家地區北側，灌溉水坑口、十興、犁頭山、安溪寮附近田園，最後匯入豆子埔溪。日治時期，臺灣大力推行灌溉水圳的公共化，整頓清領時期水圳管理的亂象，以改善農業生產的發展。總督府將竹北地區原有的水圳合併為三個主要的水利系統，分別為灌溉舊港地區的「貓兒錠圳」、灌溉六家地區的「東興圳」，與灌溉六家、舊港地區的「舊港圳」。
+            </p>
+            <p>
+              為了準確分配頭前溪的水量，興建<strong>「水圳圓環」</strong>之分水工程，使溪水進入圓環，流入左邊為東興圳、右邊為舊港圳。原本東興圳灌溉的六家地區的稻田，配合新竹高鐵站開發，被高速公路及高樓大廈取代，而舊港圳灌溉的竹北目前仍保有一些農田。
+            </p>
+          </div>
+        </div>
+
+        <!-- 百年水礱間 -->
+        <div class="card-border overflow-hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <div class="h-64 md:h-auto bg-gray-100 relative">
+              <img src="https://lh3.googleusercontent.com/d/1wr5lQbO_fRp3PU3acar4nzYm037gyCza=w1200" alt="百年水礱間渦輪" class="w-full h-full object-cover">
+              <div class="absolute bottom-2 left-2 text-xs text-white bg-black/70 px-2 py-1 rounded">圖為年久失修的百年歷史渦輪</div>
+            </div>
+            <div class="p-6 md:p-8 flex flex-col justify-center space-y-3">
+              <h3 class="text-xl font-bold text-gray-900">百年水礱間</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                水礱間建於1928年，<strong>「水礱間」又叫水龍鼓</strong>，引入舊港圳的圳水進入渦輪區，利用高低差推動水力渦輪轉動，並用皮帶推動槓桿裝置帶動碾米機碾米。而渦輪區除了是水礱間的動力來源，亦具發電和捕獲少量魚蝦蟹的附加功用，為農家的餐桌上添增美味可口的菜餚，如今竹北東海區唯一保存完整的百年水力碾米廠。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 豐禾田 -->
+        <div class="card-border overflow-hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <div class="p-6 md:p-8 flex flex-col justify-center space-y-3 order-2 md:order-1">
+              <h3 class="text-xl font-bold text-gray-900">豐禾田</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                2023年，台灣豐禾子協會在倡議友善耕作與食農教育議題上有新的突破，由理事-阿祥送米的呂正祥帶領，開始在鄰近新竹高鐵站的竹北東海經營一甲水稻田。
+              </p>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                水源來自舊港圳，進入田區的水最終再回到頭前溪進入飲水系統，結合生態觀察課程，帶動公民參與建立豐禾田的生態資料庫；開發客語食農教育活動，將稻米生產連結回周邊客語環境、傳承客庄文化，同時推動客家米食文化與米食課程，研發米加工製品如蘿蔔糕、米穀粉、燒酎等，增加在地生產在地消費的選擇。城鄉共好不是口號，透過豐禾田慢慢一點一點經營與實踐。
+              </p>
+            </div>
+            <div class="h-64 md:h-auto bg-gray-100 order-1 md:order-2">
+              <img src="https://lh3.googleusercontent.com/d/18VfOuDRwN19pKop6M09qO8ovUfJY8CGm=w1200" alt="豐禾田" class="w-full h-full object-cover">
+            </div>
+          </div>
+        </div>
+
+        <!-- 瑞招農場 -->
+        <div class="card-border overflow-hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <div class="h-64 md:h-auto bg-gray-100">
+              <img src="https://lh3.googleusercontent.com/d/1uCi3DLkBfeCeKXydW1-UcExX4g4gaChx=w1200" alt="瑞招農場" class="w-full h-full object-cover">
+            </div>
+            <div class="p-6 md:p-8 flex flex-col justify-center space-y-3">
+              <h3 class="text-xl font-bold text-gray-900">瑞招農場</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                瑞招農場位於新竹縣竹北市，是璞玉田的農地，農場主人莊棋本先生本著友善土地與環境、保留農地及保護當地文化傳統之精神，開放農地作為食農教育，共農共享的園地。例如，成立種菜合作社及養雞合作社，使社員享受自然的療癒，生產健康有能量的食物，並一齊共老於農場的時光中。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 智慧稻田 -->
+        <div class="card-border overflow-hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <div class="p-6 md:p-8 flex flex-col justify-center space-y-3 order-2 md:order-1">
+              <h3 class="text-xl font-bold text-gray-900">智慧稻田</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                「智慧稻田」位於新竹縣竹北市，由新竹頭前溪灌溉的沙壤地，經犁頭山潺潺流水沖刷而成的竹塹平原，將荒川石礫化為良田的客家聚落。而稻田的主人田守喜先生為「桃園3號」香米之種植先鋒，具有「竹北米王」之美譽，曾蟬聯2年全國十大經典好米，更於2014年榮獲全國名米產地冠軍。
+              </p>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                田守喜先生種植的稻米，不使用化肥、農藥、除草劑，所以時常於田野間看到橙瓢蟲及牽牛花。稻米熟成後，採永續農業栽培的日曬米，現碾現送，使米粒歷歷分明，口感軟硬適中，回味的香甜充斥於味蕾，連冷飯都甘芳可口。為維持土壤的肥沃，田守喜先生連年養地灑綠肥，種植三葉草，豆科植物、苕子、向日葵、波斯菊等，限制稻米產量，並藉由停灌休耕持續養地。
+              </p>
+            </div>
+            <div class="h-64 md:h-auto bg-gray-100 order-1 md:order-2">
+              <img src="https://lh3.googleusercontent.com/d/1w9eYfnBOz7O61_65CB2CNlMts9DF24KR=w1200" alt="智慧稻田田守喜" class="w-full h-full object-cover">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== TAB 6: 犁頭山溪 ==================== -->
+    <div id="tab-trails" class="tab-pane hidden">
+      <!-- 標頭圖 6: 犁頭山溪專用標頭 -->
+      <div class="site-banner" style="background-image: url('https://lh3.googleusercontent.com/d/1L6iMZ4FBQrjtadPMFFHSe3YqxnhnvHMo=w2000');">
+        <h1 class="banner-title">犁頭山溪</h1>
+      </div>
+
+      <div class="max-w-5xl mx-auto px-4 py-12 space-y-12 content-box">
+        
+        <!-- 【犁頭山溪與周邊田景】 -->
+        <div class="space-y-4">
+          <h2 class="text-2xl font-bold text-gray-900 border-l-4 border-gray-800 pl-3">【犁頭山溪與周邊田景】</h2>
+          <div class="text-gray-700 leading-relaxed text-base space-y-3">
+            <p>
+              犁頭山，又名為犂頭山。<strong>犁頭山溪發源於新竹縣芎林鄉，為天然水脈，位於竹北流域的上游</strong>，因深受氣候變化影響，附近農田無法完全仰賴犁頭山溪的水源。
+            </p>
+            <p>
+              於日治時期，推行的水圳管理，更是加劇影響農業發展。直到如今，犁頭山溪順流而下，與人工開鑿於頭前溪引水的舊港圳水路匯流，在竹北東海地區形成中下游的豆仔埔溪，使竹北市農田得以灌溉，亦使東海糧倉更加豐饒。
+            </p>
+          </div>
+        </div>
+
+        <!-- 璞玉自然農場 -->
+        <div class="card-border overflow-hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <div class="h-64 md:h-auto bg-gray-100 relative">
+              <img src="https://lh3.googleusercontent.com/d/1M5gg5L8vSWNOSPIBwbENqGRwJm7KBpk3=w1200" alt="阿婆施肥璞玉農場" class="w-full h-full object-cover">
+              <div class="absolute bottom-2 left-2 text-xs text-white bg-black/70 px-2 py-1 rounded">阿婆正在用富含粗纖維的蔗渣為無農藥的土地施肥</div>
+            </div>
+            <div class="p-6 md:p-8 flex flex-col justify-center space-y-3">
+              <h3 class="text-xl font-bold text-gray-900">璞玉自然農場</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                璞玉自然農場位於新竹縣芎林鄉，提倡順其自然的理念，從春天到冬天、從發芽到收成，採用日本岡田茂吉先師提倡的自然栽培法，不摻入任何化學農藥與肥料，使用落葉、枯草等天然堆肥，讓農園的蔬果展現出原始的美麗樣貌。
+              </p>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                為使大朋友與小朋友們認識有機農業如何從土地到餐桌，對外開放「玩土週」活動，學習種植各式蔬菜、香草、瓜果、根莖類，並跟隨季節瞭解無農藥、無肥料的耕作，感受土壤裡大自然給予的餽贈。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 芎林金城武樹 -->
+        <div class="card-border overflow-hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <div class="p-6 md:p-8 flex flex-col justify-center space-y-3 order-2 md:order-1">
+              <h3 class="text-xl font-bold text-gray-900">芎林金城武樹</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                芎林金城武樹位於新竹縣芎林鄉的鄉間小路上，右側為聳立的犁頭山與石頭坑山，且四週放眼望去均是一片又一片的稻田，又因大樹生長的生態環境形同台東池上金城武樹，故命名為金城武樹。但與台東池上金城武樹的不同是，芎林金城武樹是一棵龍眼老樹，非茄苳樹，且自不同角度眺望，可驚奇的發現到大樹的不同姿態。
+              </p>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                不僅如此，周圍的景色亦隨四季變化而呈現出不同風貌，夏季一片片綠油油的稻浪，秋季一片片金燦燦的稻穗，皆使人感到心曠神怡，不得不讚嘆大自然的美色。同時也適合熱愛騎乘單車的車友一齊暢遊，尤其是炎夏之際，於芎林金城武樹下一邊享受著自然風的吹拂，一邊啜飲著甘甜的飲品，令人十分消暑。
+              </p>
+            </div>
+            <div class="h-64 md:h-auto bg-gray-100 relative order-1 md:order-2">
+              <img src="https://lh3.googleusercontent.com/d/1sMha1im2qKHd5KIADT_8vRzskwlwNdEa=w1200" alt="大家與金城武樹合影" class="w-full h-full object-cover">
+              <div class="absolute bottom-2 right-2 text-xs text-white bg-black/70 px-2 py-1 rounded">大家與金城武樹開心合影</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 月桃窩古道 -->
+        <div class="card-border overflow-hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <div class="h-64 md:h-auto bg-gray-100">
+              <img src="https://lh3.googleusercontent.com/d/19uXe-D2GmRbw3lLDPZTxESae6bimIlTS=w1200" alt="月桃窩古道" class="w-full h-full object-cover">
+            </div>
+            <div class="p-6 md:p-8 flex flex-col justify-center space-y-3">
+              <h3 class="text-xl font-bold text-gray-900">月桃窩古道</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                月桃窩古道，因滿山的月桃而聞名，連結竹北、芎林與新埔之間的產業、就學、交通之要道，承載著早年開墾的常民生活及對抗不公的抗日事蹟。
+              </p>
+              <p class="text-gray-600 text-sm leading-relaxed">
+                月桃窩古道乃是原始古道，歷經風災摧殘而崩壞的古道，於多次踏查、清理及手作步道的修整，使已塵封35年的道路，重新以綠道之姿，回到大家的生活裡。
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== TAB 7: 田間美食 ==================== -->
+    <div id="tab-food" class="tab-pane hidden">
+      <!-- 標頭圖 7: 田間美食專用標頭 -->
+      <div class="site-banner" style="background-image: url('https://lh3.googleusercontent.com/d/1kgeMrQE6fUBE_bSjmaMWFqjEuhOGQ9KY=w2000');">
+        <h1 class="banner-title">田間美食</h1>
+      </div>
+
+      <div class="max-w-5xl mx-auto px-4 py-12 space-y-12 content-box">
+        
+        <div class="space-y-2">
+          <h2 class="text-2xl font-bold text-gray-900 border-l-4 border-gray-800 pl-3">田間私房店家</h2>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            坊間常有不易察覺的美食，小編們隨著深入走訪東海地區搜集以下各間好店，在踏賞完未經地產開發的東海區田野稻物外，填飽自己的肚子也非常重要喔！
+          </p>
+        </div>
+
+        <div class="space-y-8">
+          
+          <!-- 樂樂長甘蔗屋 -->
+          <div class="card-border overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3">
+              <div class="h-56 md:h-auto bg-gray-100 md:col-span-1">
+                <img src="https://lh3.googleusercontent.com/d/1imXm4-Toz3KkYlxt9GrJxPEgOZlvsUNM=w1200" alt="樂樂長甘蔗屋" class="w-full h-full object-cover">
+              </div>
+              <div class="p-6 md:p-8 md:col-span-2 flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <div class="text-xs font-semibold text-gray-400">[ 目前銷售通路為FB訂購、與少數合作店家實體販售 ]</div>
+                  <h3 class="text-xl font-bold text-gray-900">樂樂長甘蔗屋</h3>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    樂樂長甘蔗屋有別於市面上選用的糖用甘蔗和榨汁用的白甘蔗，謝老闆採用纖維較少、糖分與水分適中的紅甘蔗，並以友善自然的農法、完全不施農藥的方式種植紅甘蔗。
+                  </p>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    熟成的紅甘蔗經手工削皮，挑去甘蔗外皮的蟲子，挑除帶有裂痕的甘蔗，去除表面附著的髒水，避免果汁內殘留大腸桿菌。品嘗甘蔗汁時，可先聞到甘蔗的香甜味，喝起來卻不甜膩，令人愛不釋手。
+                  </p>
+                  <div class="text-xs text-amber-700 bg-amber-50 p-2.5 rounded border border-amber-200 mt-2">
+                    [ 7月實體店面暫停營業，甘蔗汁生產、銷售不受影響，FB私訊訂購 ]
+                  </div>
+                </div>
+                <div>
+                  <a href="https://www.facebook.com/everejoice.CAFE/?locale=zh_TW" target="_blank" rel="noopener noreferrer" class="btn-action">
+                    FB訂購直通車 ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 有田咖啡 -->
+          <div class="card-border overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3">
+              <div class="h-56 md:h-auto bg-gray-100 md:col-span-1">
+                <img src="https://lh3.googleusercontent.com/d/1gh5UvvlQNXFNuHt42b7VeUKFjeMTgsjD=w1200" alt="有田咖啡" class="w-full h-full object-cover">
+              </div>
+              <div class="p-6 md:p-8 md:col-span-2 flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <h3 class="text-xl font-bold text-gray-900">有田咖啡</h3>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    有田咖啡座落於鄉間小路，前身為祖父經營一甲子的中藥舖，現由兩姊妹改造為咖啡店，並仍保留當時的中藥櫃，製作的某些單品也依舊利用中藥燉煮，例如藥房麻辣燙等，展現古今融合之態樣。
+                  </p>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    有田咖啡具小包廂設計，適合親朋好友聚會，不僅有隱私空間，又可向外遠眺，享受大自然的視覺饗宴，悠然品嘗秀色可餐的餐點與飲品，彷彿置身於世外桃源，體驗著久違愜意的時光。
+                  </p>
+                </div>
+                <div>
+                  <a href="https://www.facebook.com/people/%E6%9C%89%E7%94%B0%E5%92%96%E5%95%A1/100064083963288/" target="_blank" rel="noopener noreferrer" class="btn-action">
+                    美食直通車 ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- J6 覓境咖啡 -->
+          <div class="card-border overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3">
+              <div class="h-56 md:h-auto bg-gray-100 md:col-span-1">
+                <img src="https://lh3.googleusercontent.com/d/1Zod2QvFAwjneA77TM1yPhoMBPY4a_Y9x=w1200" alt="J6 覓境咖啡" class="w-full h-full object-cover">
+              </div>
+              <div class="p-6 md:p-8 md:col-span-2 flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <h3 class="text-xl font-bold text-gray-900">J6 覓境咖啡</h3>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    覓境咖啡是<strong>竹北慢跑騎行綠廊「竹22」的一段休息點！</strong>特別的是覓境咖啡的店面造型是以白色集裝箱為主。
+                  </p>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    相較於一般的咖啡屋可觀賞夜景或者山景，蔚藍的天空、綠油油的稻田是覓境咖啡的招牌特色，一邊享用美食，一邊眺望美景，使我們暫時忘卻忙碌的都市生活，享受著難得的愜意時光。
+                  </p>
+                </div>
+                <div>
+                  <a href="https://www.facebook.com/J6Coffee/?locale=zh_TW" target="_blank" rel="noopener noreferrer" class="btn-action">
+                    美食直通車 ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 小藜ㄇㄞˋ本丸 -->
+          <div class="card-border overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3">
+              <div class="h-56 md:h-auto bg-gray-100 md:col-span-1">
+                <img src="https://lh3.googleusercontent.com/d/1sdSfv4Dj-Ly7pW4RrO6EgfiK7RK6acYF=w1200" alt="小藜ㄇㄞˋ本丸" class="w-full h-full object-cover">
+              </div>
+              <div class="p-6 md:p-8 md:col-span-2 flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <h3 class="text-xl font-bold text-gray-900">小藜ㄇㄞˋ本丸</h3>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    小藜ㄇㄞˋ本丸主打放有富含營養價值「藜麥」的飯糰，堅持以木桶炊飯，使米飯具有口感；餡料含有菜脯、酸菜、油條、滷蛋、香鬆與花生粉，且每日也有提供限量的隱藏版本丸。
+                  </p>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    除此之外，店鋪亦有提供手作飲品，如古早味紅茶、冷泡茶、冷萃咖啡等，可一邊品嘗著本丸，一邊啜飲著飲品，好好享受一頓豐盛早餐。
+                  </p>
+                </div>
+                <div>
+                  <a href="https://www.facebook.com/profile.php?id=100064240500520&locale=zh_TW" target="_blank" rel="noopener noreferrer" class="btn-action">
+                    美食直通車 ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 頁尾 (與 Google Sites 原始聯絡資訊與風格完全一致) -->
+  <footer class="bg-gray-100 border-t border-gray-200 py-10 mt-16 text-center text-sm text-gray-600 space-y-2">
+    <div class="max-w-4xl mx-auto px-4 space-y-1.5">
+      <div class="font-bold text-gray-800 text-base">新竹縣竹北社區大學</div>
+      <div>辦公室：新竹縣竹北市中正西路154號(竹北國中內)</div>
+      <div>電話：03-5533094 (平日14:30-21:00) ｜ 電子信箱：zhubei.cc@gmail.com</div>
+      <div class="pt-2 text-xs text-gray-400">竹北社區大學-東海地方知識學長時地景觀測計畫</div>
+    </div>
+  </footer>
+
+  <!-- 3. JavaScript 邏輯 (時光機 + 頁籤切換 + 地圖導覽) -->
+  <script>
+    const SPOTS = [{"num": "01", "name": "覓境咖啡", "intro": "位於東海里南端、頭前溪畔防汛道路旁，保有開闊的溪畔視野與休閒聚落氛圍，為走讀路線南側起點。", "phenology": "春分插秧期水田倒映天光，夏至時稻浪翻湧，秋分時節金黃稻穗垂掛，與溪畔防風林相映成趣。", "has_aerial": true, "default_mode": "aerial", "cover_url": "https://lh3.googleusercontent.com/d/10Khs_N459pFwZJ9_DBdE3GJjM5bSOSD9=w1000", "aerial": {"1222": "", "0122": "https://lh3.googleusercontent.com/d/1orNpY2KTyeRyakzisBWSzUCJt8uNxO-U", "0319": "https://lh3.googleusercontent.com/d/1X9PSux7q3eEi-kNwpousYULC1ZiXYlFH", "0421": "https://lh3.googleusercontent.com/d/1EwSo8-w4uUrCFSSB-idiL3CrXQnps2rJ", "0521": "https://lh3.googleusercontent.com/d/1xuic5gnIpYdHlY8af6fi-gY12qn8AxDb", "0625": "https://lh3.googleusercontent.com/d/123r0hZSNHlgahhI4VMIlc-1EAW2whbjQ", "0716": "https://lh3.googleusercontent.com/d/13YhHc3_DJjqzhQixhhhXLHqoJ99rV-qZ", "0818": "", "0831": "https://lh3.googleusercontent.com/d/1m9aWRuB-lTz-l-z6dqtxSe_c2dMDnOZ7", "0923": "https://lh3.googleusercontent.com/d/19-qUaVrs2effDe92Wlb0olYjOAIiTRVD"}, "ground": {"1222": "https://lh3.googleusercontent.com/d/1TnxCxtw_PD0oKuIjaPNJwiY39BfjijLc", "0122": "https://lh3.googleusercontent.com/d/1prOkRK6WpF9RLnjcNLg5FF6sXCNCb7Ef", "0319": "https://lh3.googleusercontent.com/d/1LaPtTjVjzm3gKBaNW2S6QfEu_kMLvbxt", "0421": "https://lh3.googleusercontent.com/d/1vowZo_6119c5uwg2J127C3cwNDD3ueAT", "0521": "https://lh3.googleusercontent.com/d/1_xh05hCWdw7kRHqbpDzF5Me_ourCtZ6N", "0625": "https://lh3.googleusercontent.com/d/1Nin8eIiixwh4YC_WHyqhPfo-z6umS5RE", "0716": "", "0818": "https://lh3.googleusercontent.com/d/1iI-eL-sk7F4AKj-CEOUbjXU9WJR7kYu1", "0831": "", "0923": ""}, "gis": {"1222": [], "0122": ["https://lh3.googleusercontent.com/d/10Khs_N459pFwZJ9_DBdE3GJjM5bSOSD9=w1000", "https://lh3.googleusercontent.com/d/13tGv2V5aQ_S-6MoyICY1Ud2gRBvmMHoJ=w1000", "https://lh3.googleusercontent.com/d/1CMVswCGvn1STqNADrdRu1Q35EZKIsNFi=w1000", "https://lh3.googleusercontent.com/d/18lkzApDMOCyoDFZ_FaagFjJI5lOjLQz6=w1000", "https://lh3.googleusercontent.com/d/1a6P6-7VU5KEw9RJlx6hr211VyGf8SH2G=w1000", "https://lh3.googleusercontent.com/d/1l_E66bbjDo1CMtP-mg7Ez09pf0CHhWXI=w1000"], "0319": ["https://lh3.googleusercontent.com/d/1YSoEszKINfZLnxdce_QbNFOgcI2kJx8G=w1000", "https://lh3.googleusercontent.com/d/1UV-hPYFtteCppqiUXMX_h2QWGl19L5tB=w1000", "https://lh3.googleusercontent.com/d/1uYupZ7OufABP-SZ4ld15qOddBGbI_FmG=w1000", "https://lh3.googleusercontent.com/d/1UWZt_ymlOCxljfXv2Mlph1fAhTqcW5zN=w1000", "https://lh3.googleusercontent.com/d/1Q4mxqn-FgPxDR7HvgoT4TR9YnD4B5VAH=w1000", "https://lh3.googleusercontent.com/d/1KGw1HKrzrgAG2wHiWA7_14d0fk4VZoy6=w1000"], "0421": ["https://lh3.googleusercontent.com/d/1zlG_i3jdSFBAN9MmpVTE_rxJ5JrwFCXh=w1000", "https://lh3.googleusercontent.com/d/1HVB8SRTClNdErcPfYOS4m3YGyNAA-uyY=w1000", "https://lh3.googleusercontent.com/d/17yzX1ozjLGzMinZRvnkilweN1r8S2V6d=w1000", "https://lh3.googleusercontent.com/d/1Z2FhfjHQEZe1hhp1ILsH2rf7z4cVupHm=w1000", "https://lh3.googleusercontent.com/d/1F5ZG2AZsnAMHb2uL_yio5deD4uMxUIqw=w1000", "https://lh3.googleusercontent.com/d/17MDmBrRAcMTufnmLVPT22oleGUJ_ZNir=w1000"], "0521": ["https://lh3.googleusercontent.com/d/14JeNUMv3BGbdLJksGQxmv_qBKOhTxInd=w1000", "https://lh3.googleusercontent.com/d/1Hju2pf8u8yBAB3YV2HvNYB4L6m1jiwvi=w1000", "https://lh3.googleusercontent.com/d/1NgCOSeJ7_koSJzKSlDFerzqXZqctJ3tW=w1000", "https://lh3.googleusercontent.com/d/1RqAFEiQgc-HKUxD7qxkVn-_XIO5-dQKc=w1000", "https://lh3.googleusercontent.com/d/1aie1MEW-OHgDKcrE819TGClY2EUmbGUA=w1000", "https://lh3.googleusercontent.com/d/13cgTqk2IOYOnayY4_d5KlQKZBgjC7TRU=w1000"], "0625": ["https://lh3.googleusercontent.com/d/1MHViSR7rYIFdLd0bZWhPpY-8H8bIE2Ne=w1000", "https://lh3.googleusercontent.com/d/16z0UbfZKZR-qbfYSWjVhuYcsncfKl5_u=w1000", "https://lh3.googleusercontent.com/d/15TgVRRQxJHNojZ3RXipg1lEwghEc89nL=w1000", "https://lh3.googleusercontent.com/d/1GqiXdzOSy0ar_N8RelhB5oI-HhuzUxsJ=w1000", "https://lh3.googleusercontent.com/d/1gMMtjwBMkQPm8DgCn5auvyNGS64v22Vi=w1000", "https://lh3.googleusercontent.com/d/1-QnkjL_RDPxyG63vzkX8OTB12zzWbQ4O=w1000"], "0716": ["https://lh3.googleusercontent.com/d/1OHSAouNEsvj714JAA-_qHfeQYlUuCj4Y=w1000", "https://lh3.googleusercontent.com/d/1RhlulwFzlLgvTrdpsaFdl6ntEfVzWM4n=w1000", "https://lh3.googleusercontent.com/d/1IiH-aHEp19XD-5xIzhV378RSglBFvkCm=w1000", "https://lh3.googleusercontent.com/d/1erHx6jkQBOSaw0bksjd_R5KCySoHIqt2=w1000", "https://lh3.googleusercontent.com/d/1vdSwuddO6AGvzM96gYDM7DPzCoBmk3pt=w1000", "https://lh3.googleusercontent.com/d/14dc_afTA7Bw6a8jOnziZq-EqGIsysXSp=w1000"], "0818": [], "0831": [], "0923": ["https://lh3.googleusercontent.com/d/16qERFzBr34z_JcAaSOnP7Bk3_y81cSXp=w1000", "https://lh3.googleusercontent.com/d/1YWUDmDEws0qz2FqxA0UTR8yDQq9g49eH=w1000", "https://lh3.googleusercontent.com/d/1VOUVnbIdoNXCej55QK9OovXp6QQLU4AJ=w1000", "https://lh3.googleusercontent.com/d/1FhUr-yeJBnxQNNz6BAf1AJm6ZGCgJUKR=w1000", "https://lh3.googleusercontent.com/d/16YePdo9a67XMzDfi2EVHVKFMjqBFZtbB=w1000", "https://lh3.googleusercontent.com/d/1r2olvrr1L8Wuut7pph_OWlKUiT2wjElb=w1000"]}}, {"num": "02", "name": "璞玉農場", "intro": "璞玉自然農場堅持友善農耕與無毒耕作，為東海里重要的食農教育基地，傳遞敬天惜地的耕作哲學。", "phenology": "大寒時翻耕養地，穀雨時綠意盎然，處暑至秋分期稻榖飽滿，農場周邊生態多樣豐富，可見各類昆蟲與候鳥。", "has_aerial": false, "default_mode": "ground", "cover_url": "https://lh3.googleusercontent.com/d/1mBLG-04nNhYfuch5GXZ3IY9ASRsgUYFN=w1000", "aerial": {}, "ground": {"1222": "https://lh3.googleusercontent.com/d/1rljShiWrfK5cAd2A-DSl97YCwPBuOI91", "0122": "https://lh3.googleusercontent.com/d/15-slTySZEX-BEWaSFcYmVOg5eLMNPvnx", "0319": "https://lh3.googleusercontent.com/d/1ym8WzlbAh6i7wFyQal3ClOHd4HAUgzaR", "0421": "https://lh3.googleusercontent.com/d/1P-I4G1xX8hbE_hVNwpZSxXHW0Xdb8HEf", "0521": "https://lh3.googleusercontent.com/d/1_jzRJ7YJanwZmXzEqZrBqPeIT0dXxYe2", "0625": "https://lh3.googleusercontent.com/d/1pkZz0LsrbeXW41xQaE2OaWLlD2M7TFgk", "0716": "", "0818": "https://lh3.googleusercontent.com/d/1LnCPNW7wL7xxSJsBFsaAo-SvvIo4MhHY", "0831": "", "0923": ""}, "gis": {"1222": [], "0122": ["https://lh3.googleusercontent.com/d/1mBLG-04nNhYfuch5GXZ3IY9ASRsgUYFN=w1000", "https://lh3.googleusercontent.com/d/1kTYWyk6oBGpAP2Sd3NdVWF_tp-OvKBU-=w1000", "https://lh3.googleusercontent.com/d/1v4d-rxE7yT0GU1pFauHOQzucg-FsyS_M=w1000", "https://lh3.googleusercontent.com/d/17wdw1qQZGJrNR0hYxWsWFtYYnKNWqGwR=w1000", "https://lh3.googleusercontent.com/d/1cxbG_sTLWWkHkZKMVHk9uLnhTZnKH98v=w1000", "https://lh3.googleusercontent.com/d/1t-oKcs2oz9i7WOglpUdsP1PId923gKzj=w1000"], "0319": ["https://lh3.googleusercontent.com/d/1jgVwms1QeN8vit5HoGuNx3EVuawoN6ma=w1000", "https://lh3.googleusercontent.com/d/1WXDaOMjldDfaJe4I2tIwZwbRNtARaeYd=w1000", "https://lh3.googleusercontent.com/d/1cH_mJxUm7nMRSkKFSr_DoGg5UuC8Xezu=w1000", "https://lh3.googleusercontent.com/d/1IePQzk6PIvABor35hPjQbxKsHPnflrgR=w1000", "https://lh3.googleusercontent.com/d/19vhMfc20nYCRvk8sMoNzA1wOrU2ryI51=w1000", "https://lh3.googleusercontent.com/d/1L-k35sYxlkLYxa8gIAcaNixAiOyQAMPq=w1000"], "0421": ["https://lh3.googleusercontent.com/d/1oP1Nhc6CTPHQ7ficlqeVypDcEMvqEvF3=w1000", "https://lh3.googleusercontent.com/d/1ZxFahjiRwn4bmgHWTWbzyz8_iK57NDmx=w1000", "https://lh3.googleusercontent.com/d/1YBiD3ry_WIH3X7CiNVhfPsyDDUR21T6b=w1000", "https://lh3.googleusercontent.com/d/16yJjObZTjCRGP7bZdvMzLkQpRWqz-8oa=w1000", "https://lh3.googleusercontent.com/d/1CFSZ6T6vQs99jZfLvban5WslviNcpO0J=w1000", "https://lh3.googleusercontent.com/d/1XPMZiNl3s0lqv7xAbSJUTMzFzQo5-Egs=w1000"], "0521": ["https://lh3.googleusercontent.com/d/1RfX5WVKrC4y7asiDdDBAozYOe7nsvqEj=w1000", "https://lh3.googleusercontent.com/d/1cL2cZyjLctY8gIjgAYJspyVyQhJUfCT2=w1000", "https://lh3.googleusercontent.com/d/16n9-uBkcxzHrIFuZnkUqqWWAA_170lEn=w1000", "https://lh3.googleusercontent.com/d/1sMaRyUhdfOTr1WoK69BHTwjvpJDe-eTM=w1000", "https://lh3.googleusercontent.com/d/1iFtuiGumMoLJeOperHayGK912P0iYMfj=w1000", "https://lh3.googleusercontent.com/d/14xCDq_B-3YeJF6qvzVGa7mtHbwa_VKbE=w1000"], "0625": ["https://lh3.googleusercontent.com/d/1VEYGcRtn0qbMIvV4oewwKG_hLM-g4p0X=w1000", "https://lh3.googleusercontent.com/d/1kn2szLOk5LPStPcoG8byGUx0cOPKGtl3=w1000", "https://lh3.googleusercontent.com/d/1Y--Bu6IzfFdAiOXDcsuaTN8PwXyjdof0=w1000", "https://lh3.googleusercontent.com/d/1n3XY_JwxuTzmBKxlrNCDIVy8NIVhV2gg=w1000", "https://lh3.googleusercontent.com/d/1lOJ1A8oUZrsaNws_1ldjrScE4_JmVH3I=w1000", "https://lh3.googleusercontent.com/d/1J3OEU60MW3ObT7X6R0UHmp-jDklEOZbg=w1000"], "0716": ["https://lh3.googleusercontent.com/d/1rmlOpX8vYOy-oRy6Y869M-u5p6jnBVu0=w1000", "https://lh3.googleusercontent.com/d/1vOZWiaCvE7_R96YasIngKolNc-G-oXOr=w1000", "https://lh3.googleusercontent.com/d/16HSBRN7C22vihinrrGslVeLqDF8043Kz=w1000", "https://lh3.googleusercontent.com/d/19ic29u0VEuNQkrl9k0Q9WvwxUR0GPZZj=w1000", "https://lh3.googleusercontent.com/d/1Vjf3BPBsufR1KHmVnIuLuiX-HbJkkKaX=w1000", "https://lh3.googleusercontent.com/d/1MVlywfAqdrozH-J8WS7kKObaZrRVxirq=w1000"], "0818": [], "0831": [], "0923": ["https://lh3.googleusercontent.com/d/1MiZHq3BXYwOUKHuDU-DZkgbrEEffFuXb=w1000", "https://lh3.googleusercontent.com/d/1dwXTZFg7mjboilE1omLAOexSBGforGt1=w1000", "https://lh3.googleusercontent.com/d/1DHsXts9b4xh-KXII_moMta-YkdTSkZcG=w1000", "https://lh3.googleusercontent.com/d/1VzeEAmIs3l08orlJ8xVRYVCDJllzfgC4=w1000", "https://lh3.googleusercontent.com/d/1ZVhXN-wWFsmzsjfItDp7MszuZLPkn6In=w1000", "https://lh3.googleusercontent.com/d/1bh9j_VrHmaILYsGhgNTkZSrfEAyPR3mG=w1000"]}}, {"num": "03", "name": "金城武樹", "intro": "佇立於遼闊稻田中央的標誌性老樹，孤峰聳立於田埂交會處，是東海田園風光中最具代表性的視覺焦點。", "phenology": "隨二十四節氣更迭，老樹見證了一期稻作的翠綠、抽穗到金黃收割，冬季休耕時則襯托出廣袤無垠的水田鏡面。", "has_aerial": true, "default_mode": "aerial", "cover_url": "https://lh3.googleusercontent.com/d/1G21ehAZe4NzYaXmX7M804zXMGSk2SSZg=w1000", "aerial": {"1222": "", "0122": "https://lh3.googleusercontent.com/d/1EbMyzihJT2CNqxEvxLku7EH0ovWFHSi7", "0319": "https://lh3.googleusercontent.com/d/1bqtgevUNuVAUQXv5ikNXiFr46E7dAmvi", "0421": "https://lh3.googleusercontent.com/d/10jZGruQZ_idlv4WVYjsY8m3yV26I92Pr", "0521": "https://lh3.googleusercontent.com/d/19Zl-pTvig9qMhUYpOawo2ez2FONI0Cju", "0625": "https://lh3.googleusercontent.com/d/1jluELKp_KgjCf36D0LW6GUvTOLsvpY-R", "0716": "https://lh3.googleusercontent.com/d/1ByzoE8DHtflRbDji1qtTMiYbjUnMRCLU", "0818": "", "0831": "https://lh3.googleusercontent.com/d/1M-rnTZq90nYGSxX6_S2LANeQlRxNmPj3", "0923": "https://lh3.googleusercontent.com/d/1rgUyreCkQn7Sla9nMW9fyAkBAuIJbFgs"}, "ground": {"1222": "https://lh3.googleusercontent.com/d/1H0RVQ9Ro8j2_YPX8W5uEOiXtpmuRQivH", "0122": "https://lh3.googleusercontent.com/d/1-ikxikPmnHdIeJACR50YboPQYcUALe6z", "0319": "https://lh3.googleusercontent.com/d/1xBjQkfFEPw5jjRX9upL1I72OwWA64IC8", "0421": "https://lh3.googleusercontent.com/d/1ABvs0m_Ef2mSz9bdmWkIxzyIRDg7y2Fu", "0521": "https://lh3.googleusercontent.com/d/1sSGf0DT3fkB9r4JhusuiLVlT2oa1cUcD", "0625": "https://lh3.googleusercontent.com/d/1IPh1BvcLxx-cW8AW4NaflmzdaouB2ZFz", "0716": "", "0818": "https://lh3.googleusercontent.com/d/1GeyRRej1ntR_LMfMtK5PYYU-CrruI1yc", "0831": "", "0923": ""}, "gis": {"1222": [], "0122": ["https://lh3.googleusercontent.com/d/1G21ehAZe4NzYaXmX7M804zXMGSk2SSZg=w1000", "https://lh3.googleusercontent.com/d/1tMSr6kXPqbLyXnm2BECMd3AJcbIuoUR6=w1000", "https://lh3.googleusercontent.com/d/10OVWaYna_YpTJO6OLeWsY_tJwMv_Niu1=w1000", "https://lh3.googleusercontent.com/d/1Lmf1vIkFcuuNrOsf7oiJUbeiW73XD6dX=w1000", "https://lh3.googleusercontent.com/d/10A1MTHBBhxTu8gPHys6MIzi7Glu56U6S=w1000", "https://lh3.googleusercontent.com/d/1l5O_F1qBSMkoTTYgwqhHIYEQzMhzJCtI=w1000"], "0319": ["https://lh3.googleusercontent.com/d/1dait-rBOpFSX57CS-34UsQBBtJapXbWm=w1000", "https://lh3.googleusercontent.com/d/1RU4X8n2IbbRZZ2NtkBssAp53FBWSBf4T=w1000", "https://lh3.googleusercontent.com/d/15jCrVCfKd3PLym25DCameh7EJNendAa3=w1000", "https://lh3.googleusercontent.com/d/1BfkdGa6YvMaA_hBEy9f9CLApenMNXjgZ=w1000", "https://lh3.googleusercontent.com/d/1mlyggtU0nteF6aa9aj121RTe7KzYRXVW=w1000", "https://lh3.googleusercontent.com/d/1pl0wDK3g12sctEHjMD-enmR_bT9EMmET=w1000"], "0421": ["https://lh3.googleusercontent.com/d/1GJ5W4WSNqjNJU_szFqe06FLd9GGVgQHa=w1000", "https://lh3.googleusercontent.com/d/13fGWi8i4YD1pBmjmLrDhBy7J9dfB_B4A=w1000", "https://lh3.googleusercontent.com/d/1n545SmO-vAQJJIrNq5igcJFxwoJGdHpM=w1000", "https://lh3.googleusercontent.com/d/1ArNvCRwUWdAl9nYRpLwrV_G9ryo5jx8o=w1000", "https://lh3.googleusercontent.com/d/1mb-fVbH-5Ak8T0z_sZKU4EOPL4-WfzHa=w1000", "https://lh3.googleusercontent.com/d/1Z5wj0L7LKKJl8Ydi38G86AhjIgUB1lSt=w1000"], "0521": ["https://lh3.googleusercontent.com/d/1s3dfSB90Mp-FTuUc0A6ZfM75TOB7xCEy=w1000", "https://lh3.googleusercontent.com/d/1QKHaguyctfkehdsLAXqv49enmHCGBIVL=w1000", "https://lh3.googleusercontent.com/d/1U41EnxLTzszyT46s1O8yFt0XMyHfIVWI=w1000", "https://lh3.googleusercontent.com/d/15zTtEZEg_WOYMEHxpUKkSiVcL5NCN7pv=w1000", "https://lh3.googleusercontent.com/d/1is4qe46oDWxBQuoMuCo9zN-AMf93OfZp=w1000", "https://lh3.googleusercontent.com/d/17M6uSIlTxckiBo0MVC0VK2vQKV3UPK3C=w1000"], "0625": ["https://lh3.googleusercontent.com/d/18_AarTsfWhzc93JfpPj0S1wzKAs-4f7r=w1000", "https://lh3.googleusercontent.com/d/1tB1YhGL_yUC69I1FoEU0mLua3sG1U6rx=w1000", "https://lh3.googleusercontent.com/d/1fmY6QApTVavlEX4SxTVEruGt5dtuXSqY=w1000", "https://lh3.googleusercontent.com/d/1U0HSFNiuwaHiSWlR63uSgq7Sy1CFoYUY=w1000", "https://lh3.googleusercontent.com/d/1j4ORHPcjFSzOIFJYSfB5TpiPQbaFxRRR=w1000", "https://lh3.googleusercontent.com/d/1IbT9qZGBxXZgvnfdIIN97YxKtFGurpgF=w1000"], "0716": ["https://lh3.googleusercontent.com/d/1EjQQpRD7GHgDlUS_0pBoY_nOkaarLuwF=w1000", "https://lh3.googleusercontent.com/d/1kyzo6HoGGbQFI6Jd2mNnvC18oxI8Zq3v=w1000", "https://lh3.googleusercontent.com/d/17PDLSWnw_-v6JpRCdi7vjzQaaNh57LOJ=w1000", "https://lh3.googleusercontent.com/d/1nHWo-huHZD2i7hl7hLXv223eC3XaF-Go=w1000", "https://lh3.googleusercontent.com/d/1unN0RVm0Io2TDT96h6fCU9CtgRQZcKyv=w1000", "https://lh3.googleusercontent.com/d/1XfR4eSa9-sZ_soDt3sc53nh8iZCgv37J=w1000"], "0818": [], "0831": [], "0923": ["https://lh3.googleusercontent.com/d/120jH9fDCr6EMu0raoSDCJiUaD6ckQE3w=w1000", "https://lh3.googleusercontent.com/d/1LYJ8fOVmNdkxHWi4SMHd-IT7X0T3Pu9b=w1000", "https://lh3.googleusercontent.com/d/1iEJoZtzDjnOf3ffyGUBShAMXKvPbdqHL=w1000", "https://lh3.googleusercontent.com/d/1ROnCM-z_m8v-Oz9RR_cxpuI8khY5y1Yy=w1000", "https://lh3.googleusercontent.com/d/1DC0h4UvfDCP8a_IbZTSYvoK6W2P3T6AY=w1000", "https://lh3.googleusercontent.com/d/1ArjiSgnGg0_7_eJTKoFoa9g0zWhgnVX5=w1000"]}}, {"num": "04", "name": "樂樂長", "intro": "智慧水田與樂樂長甘蔗屋結合了傳統甘蔗農事記憶與現代科技農耕監測，為客庄農村轉型示範據點。", "phenology": "小滿時節甘蔗茁壯抽高，盛夏夏至濃蔭覆蓋，秋分甘蔗節節分明，水田水位由智慧閘門精準調控。", "has_aerial": true, "default_mode": "aerial", "cover_url": "https://lh3.googleusercontent.com/d/1zYzowLGJld43aeUcjZIB8EiaTLrNil6R=w1000", "aerial": {"1222": "", "0122": "https://lh3.googleusercontent.com/d/15mK3gThe3gy8dKoGcR-VddJDUist5F6n", "0319": "https://lh3.googleusercontent.com/d/1iegRSxCLns7OfzsPIxf5MTHi4UUyGjCQ", "0421": "https://lh3.googleusercontent.com/d/1yXJYa2TsxUD3o8h6km99Pl9aYczft3YO", "0521": "https://lh3.googleusercontent.com/d/1RtseoOUKInW-Pkj1L13Hnno_2zAVQz8Q", "0625": "https://lh3.googleusercontent.com/d/1t7KXdAvyIrt3GbpN4Le1GtJBMDqXPHMf", "0716": "https://lh3.googleusercontent.com/d/1bHTMqiYgTee3C3aZhZQ1en8k04a-4fAU", "0818": "", "0831": "https://lh3.googleusercontent.com/d/1DtXcaL9wNMPUcOqaAhKkFZ8hHn9XKGdo", "0923": "https://lh3.googleusercontent.com/d/1fO1zy4AR2Vclrzx4ky28ACXSONPpB43Y"}, "ground": {"1222": "https://lh3.googleusercontent.com/d/1saz0O3_G_XRlbgSgNlO3qVZ_YgtYrxSZ", "0122": "https://lh3.googleusercontent.com/d/15N-aRqGJT4XUeHDmIM--DzFK7U1kGSiH", "0319": "https://lh3.googleusercontent.com/d/11J80Vycq1olJAHneZ7CmJ5QRQmY8g67_", "0421": "https://lh3.googleusercontent.com/d/1kSCmgpgBplkB55uAVPX-1B-j8GwyL5uD", "0521": "https://lh3.googleusercontent.com/d/1TgtXTVKX_1LuLNf3BVmmEbJUSr14iOU1", "0625": "https://lh3.googleusercontent.com/d/18Abk94jh3yn4yTnU8jeOtImkDqXWWaIX", "0716": "", "0818": "https://lh3.googleusercontent.com/d/1Ej0jqpVUDvdJH9YMGcV46WeMwWUCKRKO", "0831": "", "0923": ""}, "gis": {"1222": [], "0122": ["https://lh3.googleusercontent.com/d/1zYzowLGJld43aeUcjZIB8EiaTLrNil6R=w1000", "https://lh3.googleusercontent.com/d/1OJ-yHWw6JuC0CA0KIzf2ORU7HPy7L1Qf=w1000", "https://lh3.googleusercontent.com/d/1nHOyYiPLTvpEWa9FEb3yYV51sEcidFu4=w1000", "https://lh3.googleusercontent.com/d/1rfWVYqV-SgX1nNgnF4EyoA7EhVHQJEdW=w1000", "https://lh3.googleusercontent.com/d/1L5O7pJWdTNAAZIvAiPkJmn0W-tUFJb_m=w1000", "https://lh3.googleusercontent.com/d/1g_breF8mx06yFF1RG3He87LNOT6Ecloq=w1000"], "0319": ["https://lh3.googleusercontent.com/d/188Drg1GcjbKZ8vay2Lv7-pUX3RbYIXvL=w1000", "https://lh3.googleusercontent.com/d/1ScZreFjEOY-QIueFLhkwMxBzDyTzz9mf=w1000", "https://lh3.googleusercontent.com/d/15CB135-WdV6Z0N--4aYZqbkkabRxREiq=w1000", "https://lh3.googleusercontent.com/d/1KxxeHpPp0HU8Eyk-tuG3frXdDGQs_ZbN=w1000", "https://lh3.googleusercontent.com/d/165gqkU1n6Ig3JQY40ez2fLDzuVUlbEdT=w1000", "https://lh3.googleusercontent.com/d/15ZM1kZcpLf4yLS-OAJbUys_b6brzs5g1=w1000"], "0421": ["https://lh3.googleusercontent.com/d/1psWvDOcJKIjwUXH1Dbao9hRvDiz00F8w=w1000", "https://lh3.googleusercontent.com/d/1oLY-5d6GinYRo9RqRnnZJzJ668rd_kiu=w1000", "https://lh3.googleusercontent.com/d/1uZfMr7dPoGwmLBYSfcUP5T8xpCY67qkO=w1000", "https://lh3.googleusercontent.com/d/1Ym0BKtQzSRT08NxDqrPT3IdjcOl2Gtyp=w1000", "https://lh3.googleusercontent.com/d/1D787O1pOuEMFayIjw3HhpcWBWvu5ZH1J=w1000", "https://lh3.googleusercontent.com/d/1LNHPIq9cDMkC5Z3OxESFBpqQ7TbakXwU=w1000"], "0521": ["https://lh3.googleusercontent.com/d/1kKsSh-Xj9KznSlHg-LhgPwZ4okL9PXrF=w1000", "https://lh3.googleusercontent.com/d/10mKmU7vmPeiOM_5P6wJSos1tEmfvXmZH=w1000", "https://lh3.googleusercontent.com/d/1Q-Z8jWHVCP5n7apbt-BHni4FmBFXGqJz=w1000", "https://lh3.googleusercontent.com/d/1SftpCvfccYC2mj1bgDNv4_T51F0WT5HS=w1000", "https://lh3.googleusercontent.com/d/1ABrYE_edvj1zOO-UdmCMp1oZPLCuMzO_=w1000", "https://lh3.googleusercontent.com/d/1M80q9BnhhC9z_cXA4R09oWAGhk9GcKet=w1000"], "0625": ["https://lh3.googleusercontent.com/d/10buGTvYwPQGQICFREESVNHPLkHH_T34t=w1000", "https://lh3.googleusercontent.com/d/13Cb2px66l5Bg54pekOq61xsSDieXzCie=w1000", "https://lh3.googleusercontent.com/d/1genHIVlgsz5xDpvS2DeXWRbTRTG7b-19=w1000", "https://lh3.googleusercontent.com/d/1mVoPmqjrB6Jbs4laKDFztX0ZS0XfvKn9=w1000", "https://lh3.googleusercontent.com/d/1DlXSQeCeU4e2ze1_uKPSV3p5BKkPJGMz=w1000", "https://lh3.googleusercontent.com/d/1L4hlP3wCqrr45ulBncO6_Jkr117EsTJJ=w1000"], "0716": ["https://lh3.googleusercontent.com/d/1nIFbeQosx-sxTDuy8K8gSdTiD_5pUKkV=w1000", "https://lh3.googleusercontent.com/d/1koWstVuaW5YTX0Ex1S75zY4xBU_Y2rPX=w1000", "https://lh3.googleusercontent.com/d/109aed-JYBA3hR1-BHk5fNRnlfOGGLK2J=w1000", "https://lh3.googleusercontent.com/d/1JKMI7xmdp0xr7FL3ooqa8v3HsG4FtUE5=w1000", "https://lh3.googleusercontent.com/d/1f-m0nN8xqkTRRP6F0t8tZ9pLHxKPUbCo=w1000", "https://lh3.googleusercontent.com/d/1cUDBGFvCiR6F_9LC1huZl-jwpfHLp-Hu=w1000"], "0818": [], "0831": [], "0923": ["https://lh3.googleusercontent.com/d/1Av2c-2dm20dowAe2J43uKkzYKfqsnKwA=w1000", "https://lh3.googleusercontent.com/d/1SfxrCsUeevybe96lTykTFQb68gwpjL7T=w1000", "https://lh3.googleusercontent.com/d/14nxHFq-2bCToXA5obJwp4_mRkBk4EoCb=w1000", "https://lh3.googleusercontent.com/d/1EKMTV0gHJtU3rXgC0ogPRmvB3PoFOMIq=w1000", "https://lh3.googleusercontent.com/d/1T6WcMqbVMadfaRbKW5OiSjflOQn_EPPr=w1000", "https://lh3.googleusercontent.com/d/1V39l_VAaai623M6VHDyLBaotlBw0wqZY=w1000"]}}, {"num": "05", "name": "金雞山", "intro": "水圳中央核心灌溉節點，舊港圳引水在此分流穿梭，滋養著東海數百年來的萬頃良田。", "phenology": "春分放水期圳水潺潺奔流，穀雨時水圳兩旁水草豐美，處暑大排進水調控，呈現客家水利工藝的精髓。", "has_aerial": true, "default_mode": "aerial", "cover_url": "https://lh3.googleusercontent.com/d/1iJQUvPZ-ZIJc8fUWRsNNDt5i4SszhTEZ=w1000", "aerial": {"1222": "", "0122": "https://lh3.googleusercontent.com/d/1gMukx3Sc0sPCc9DF4SxW1JBBWOYAqSuV", "0319": "https://lh3.googleusercontent.com/d/1hfAfp53SXzlpfFTPIjIudvz7IiVEhUPs", "0421": "https://lh3.googleusercontent.com/d/1PwE-QYA9lmZm009keCJUJwW1GeLyTpaS", "0521": "https://lh3.googleusercontent.com/d/1ftuLqjEofJM8px5NSIKaA9VLdbNeJNo2", "0625": "https://lh3.googleusercontent.com/d/1UAOR0H97-Mjs3iiEI81FTPDXaDTLSDNn", "0716": "https://lh3.googleusercontent.com/d/1gT24T_gCz9lfU720juxPtFfkdnPq584a", "0818": "", "0831": "https://lh3.googleusercontent.com/d/1DfUMBctB3oJWOJDHhOj7_vNMj3_Gmswg", "0923": ""}, "ground": {"1222": "https://lh3.googleusercontent.com/d/1BM8-1cSzIVaQLIt5QNdY4Yuo9xREV10M", "0122": "https://lh3.googleusercontent.com/d/1TyXMzm-7R5B4mXfnLUN8TASU6eav8FTi", "0319": "https://lh3.googleusercontent.com/d/1Au39KOjw0Nex7Gek_MuqxNpDn2AI9GBO", "0421": "https://lh3.googleusercontent.com/d/11-YwPt8H0u_6fkk8cpfzs_NFbXKGgDFG", "0521": "https://lh3.googleusercontent.com/d/1ERFwJDIseUEJwIelwgYOlrteiX1EPOqQ", "0625": "https://lh3.googleusercontent.com/d/1nab8ZR5Sw9UDxcfSwZOc6XfEu_kACdau", "0716": "", "0818": "https://lh3.googleusercontent.com/d/1i54SNU4yUubnA6IrF6NZ1OZ7hJcwu9xy", "0831": "", "0923": ""}, "gis": {"1222": [], "0122": ["https://lh3.googleusercontent.com/d/1iJQUvPZ-ZIJc8fUWRsNNDt5i4SszhTEZ=w1000", "https://lh3.googleusercontent.com/d/10BHP912PUGliIUq-l5E5u-3vC0PaeFUA=w1000", "https://lh3.googleusercontent.com/d/1vw8SFmdQ0i8uOxLpbci-Dq9YNSUTVMM7=w1000", "https://lh3.googleusercontent.com/d/1itNP_U_bZtOO3H1kIG0zGiZ8jTSzpmNH=w1000", "https://lh3.googleusercontent.com/d/1fNXJjETfkxvYEyQh6IVv0yNlB6C1shEa=w1000", "https://lh3.googleusercontent.com/d/1eZvp8eR9ZgTFcMjHIutv5QWZuykhjEy0=w1000"], "0319": ["https://lh3.googleusercontent.com/d/18y-Hd4nErAob2zSwYKYpmN_hXdHKFjEJ=w1000", "https://lh3.googleusercontent.com/d/10yrh0JsfOFrDMvv0I-PPz2_-XNTpSgl6=w1000", "https://lh3.googleusercontent.com/d/1cPcrcVcDVLSUWDdlfqrQXSP1JPArlftp=w1000", "https://lh3.googleusercontent.com/d/1UDRFUJFwLN21Xp4EVTKqPyUvIl02N_IM=w1000", "https://lh3.googleusercontent.com/d/1ErOoABySQTwTPUYo9dkr_FzCSboeJUQQ=w1000", "https://lh3.googleusercontent.com/d/1qMWHGKyWuJIKRU17dNq6CNjJ51mLVMVZ=w1000"], "0421": ["https://lh3.googleusercontent.com/d/1OtF-5Y4ZYolKYXuw3R9JTy31T5HmYY8b=w1000", "https://lh3.googleusercontent.com/d/1D5hN_IY4pvMq6Mvbre3GzlxG5Qd8jQiR=w1000", "https://lh3.googleusercontent.com/d/1sN0HnAOdAwUbfRQiK2Vh5SLMbE-YnV9j=w1000", "https://lh3.googleusercontent.com/d/1VnoY1v3Gex4b1VjV5wyBB-GiW5yb5yJk=w1000", "https://lh3.googleusercontent.com/d/1uxzkHr7wl0knLQaTuqHAHF1MWf0XMoEO=w1000", "https://lh3.googleusercontent.com/d/1yUa6pbQU8oMOvXVt26EwCSNVN6ZUIKYJ=w1000"], "0521": ["https://lh3.googleusercontent.com/d/1onjiFVwkkBG8vmHeV-twHlSA67S8NPA2=w1000", "https://lh3.googleusercontent.com/d/1c6r_Y6FNaofZTgZNJJWfBSujzHTmfL3n=w1000", "https://lh3.googleusercontent.com/d/1mAsLnh2RKbU9kinhqJ50glPNZzaTOZ3s=w1000", "https://lh3.googleusercontent.com/d/1xpjqM-l-GNhe6fznPwPXL_gnSUREs4XC=w1000", "https://lh3.googleusercontent.com/d/1loH-vWyN953jbq4R9kDbmlvfm4AUAXxy=w1000", "https://lh3.googleusercontent.com/d/1CF6VXgcci1JUR6Xo8YynYKkapgvZNdxp=w1000"], "0625": ["https://lh3.googleusercontent.com/d/10XE5JInY-vb8B5p-QW8oGhDWA6PRTHth=w1000", "https://lh3.googleusercontent.com/d/1iEEJ_kEudmpGiu_e_8bVpxEAWgKhci1R=w1000", "https://lh3.googleusercontent.com/d/1a9ItiISW8QPORDYFUQJa7exKDZditjA1=w1000", "https://lh3.googleusercontent.com/d/1En74_OomLhKP5mk86lDqHwE8T7xt8QJz=w1000", "https://lh3.googleusercontent.com/d/1UNWngaemaQPjHg-C9Hr3NDQdaI2V67kK=w1000", "https://lh3.googleusercontent.com/d/1b37hsSpjlqettcGBKoSTbTcIkiwYWPRt=w1000"], "0716": ["https://lh3.googleusercontent.com/d/1JNpTnTzMpUi65o39w4j_Ri5rwkqxHlUQ=w1000", "https://lh3.googleusercontent.com/d/1VavDyyEeN0ELZmQIhhu67ho9woI9wn51=w1000", "https://lh3.googleusercontent.com/d/1QPvOtddmbkDZRVzmDS6mYOPV4qAx-BV4=w1000", "https://lh3.googleusercontent.com/d/1lpajXKzChGCnTX-BnmgZtyrJFCljZI57=w1000", "https://lh3.googleusercontent.com/d/17Woqb6DIqd6LZMCiyLy9d7jLqelwb_1H=w1000", "https://lh3.googleusercontent.com/d/1e7P0uRjukFDBmlthO62WWQZ94vp9HL5e=w1000"], "0818": [], "0831": [], "0923": ["https://lh3.googleusercontent.com/d/1PsVtq2my-hpytJATCjsCGRvvtkbG9DiE=w1000", "https://lh3.googleusercontent.com/d/1WZvUiO-muqiuyIErAUT_reojzUlqDC10=w1000", "https://lh3.googleusercontent.com/d/12ppNLaXTvL8bIwYPoaHVdFTa0XuUDAL0=w1000", "https://lh3.googleusercontent.com/d/19yjbyVAFOqC2DM-ZOU-96_SABBmkHyF8=w1000", "https://lh3.googleusercontent.com/d/1v1T1-jhXJkca3d3mtJR4kg7YC3KpgJ_x=w1000", "https://lh3.googleusercontent.com/d/10pBY86iQyDRBKvOX6JNXla4GeciaTRzU=w1000"]}}, {"num": "06", "name": "冠軍秋葵", "intro": "北端近高鐵軌道田區，在地農民精耕的高品質秋葵田與蔬菜專區，形成現代高鐵與傳統田園的強烈對比。", "phenology": "小滿至小暑正是秋葵生長盛產期，鮮黃花朵晨開暮落，翠綠果莢高聳，與疾駛而過的高鐵交織成動人風景。", "has_aerial": true, "default_mode": "aerial", "cover_url": "https://lh3.googleusercontent.com/d/1MzQc9SF1GkVNiTYexdWCWh_MJYg0_ful=w1000", "aerial": {"1222": "", "0122": "https://lh3.googleusercontent.com/d/12pCQoo45GMKhQR7LEEaGU8Wq_P44rqrH", "0319": "https://lh3.googleusercontent.com/d/13r94ZprRdgBQXkgGQyJYrVGUO9enWmn0", "0421": "https://lh3.googleusercontent.com/d/1PSyI9gxk2kinWhlkOG0EYd8-iWXgQX0o", "0521": "https://lh3.googleusercontent.com/d/1nOLkwwjLj76doJxST378QrU_IhceGubX", "0625": "https://lh3.googleusercontent.com/d/1_XRcgOGg8ONjuIpX9J3Lc3ZZ934Ju4lj", "0716": "https://lh3.googleusercontent.com/d/1qgtQr4cnX8pPVFhjZTdiwEZ00djFJYpZ", "0818": "", "0831": "https://lh3.googleusercontent.com/d/1AyRnkWlvlagy8Fi6uiFpj6xPIvHgn7Z3", "0923": "https://lh3.googleusercontent.com/d/1TAcGTjuAaK9Kjhw3MRU70tzgbZcQhx6r"}, "ground": {"1222": "https://lh3.googleusercontent.com/d/1jHWP5fqPs5wA1EFXWcH3uHH_iGKRL5CU", "0122": "https://lh3.googleusercontent.com/d/1g0NwPXmsddmEBcIBcHDsMMiYndY4oOTI", "0319": "https://lh3.googleusercontent.com/d/1nRS11aY6XkL351Z7xXK0aX1Zqfir3szg", "0421": "https://lh3.googleusercontent.com/d/1zOTPBkoSWSI6kE-Yu6aiVaqhj_75Z3L_", "0521": "https://lh3.googleusercontent.com/d/1FvAPsPwbgiSlcCB6d_Su0cjF7sqim9Zy", "0625": "https://lh3.googleusercontent.com/d/1QcqZou06dJvjgMgLpsm4zYPmZdHQN3cp", "0716": "", "0818": "https://lh3.googleusercontent.com/d/1rmEG_71mfoWj34Ydb5yBYdrdudKcywk5", "0831": "", "0923": ""}, "gis": {"1222": [], "0122": ["https://lh3.googleusercontent.com/d/1MzQc9SF1GkVNiTYexdWCWh_MJYg0_ful=w1000", "https://lh3.googleusercontent.com/d/1sd3GIhqjiFHBZ1lWKL1GzTwgeuZBmdCr=w1000", "https://lh3.googleusercontent.com/d/1xBsj-wCAifLRbfsbUb1L7eWH_IRB-d3x=w1000", "https://lh3.googleusercontent.com/d/1OIShrA6YtmDR15IYRIUV6G2rdGuFhWmi=w1000", "https://lh3.googleusercontent.com/d/1psVdxjdTfJkvtVYM2L_J8px6BMd3by7p=w1000", "https://lh3.googleusercontent.com/d/1eXKGG9h7xQ4YkcWHvkLB6d3m_fBbC0FX=w1000"], "0319": ["https://lh3.googleusercontent.com/d/14D4BD1RXB6MKk5CkxXB36P3PbOKl12pp=w1000", "https://lh3.googleusercontent.com/d/1BpBfGTue3IkGB31C_wozheH_xj0lCwsH=w1000", "https://lh3.googleusercontent.com/d/1TJLSDbDLdqLOm9wG4sUIEt2CqhJz77UO=w1000", "https://lh3.googleusercontent.com/d/1xhJakCLWpmOe2chInx7UOqLbFbRv-nL9=w1000", "https://lh3.googleusercontent.com/d/1ZG_O9GINDC6kM4XhM6cjcByXiZ8Su1b9=w1000", "https://lh3.googleusercontent.com/d/1XR_2W7KEYJXOPaZl_alWJq6qATt2zr4L=w1000"], "0421": ["https://lh3.googleusercontent.com/d/1BkZ1BcitSkOuSrZsYKLCuUkBv6Tvtm7e=w1000", "https://lh3.googleusercontent.com/d/1IzoBoks-JCUExn0kuz78Yv_fgIt79akD=w1000", "https://lh3.googleusercontent.com/d/18s8C-3Jn68bid3l40XiZ4IV3NRwqOXde=w1000", "https://lh3.googleusercontent.com/d/1aZLNKgLYIdj9SRQrW0yMeS8SRtZvMVxu=w1000", "https://lh3.googleusercontent.com/d/1xGuhrRxswy7qbk6wolLgrYnfFj803wAL=w1000", "https://lh3.googleusercontent.com/d/1SHGN5vjBY60SZ6Q4Buc6-gtNAnUOudrJ=w1000"], "0521": ["https://lh3.googleusercontent.com/d/1c1tUT9KlgLIPmwkcUr3FSGPu5uwLke4a=w1000", "https://lh3.googleusercontent.com/d/1_ExYnMWQ5yrUOYFl3DngfmkM0nT8s5ni=w1000", "https://lh3.googleusercontent.com/d/1bFsZ6Dua_sPcSqso82Q3n0cHMoe9fnv7=w1000", "https://lh3.googleusercontent.com/d/1dwy6-fmNLrT0RRxJpML8z8rjUwqwmSKT=w1000", "https://lh3.googleusercontent.com/d/19mQvx2Zoz_KZr3ie8aF6JCuUbqHYfXYV=w1000", "https://lh3.googleusercontent.com/d/1OcAFVieJChpnJMvGd_QYepluiQEuL2zS=w1000"], "0625": ["https://lh3.googleusercontent.com/d/1dUcMSIIfUFRiLjBRckS17LVx09OnvYmm=w1000", "https://lh3.googleusercontent.com/d/1W8PiBppJ5zkTtNY81VLz6lqKX9oJXwrc=w1000", "https://lh3.googleusercontent.com/d/1QEhedor4UqmI-KTfj93tv9SJCjy92cfX=w1000", "https://lh3.googleusercontent.com/d/1RZnESFDBZdfsNVo1pnNVvKtKzdEokYEN=w1000", "https://lh3.googleusercontent.com/d/1waT5XIRKqLtz93Cw-TWRCLZLxz_YMHH_=w1000", "https://lh3.googleusercontent.com/d/14j58W3mY6EkHGFVRYRog3P_j0MlQ9ELA=w1000"], "0716": ["https://lh3.googleusercontent.com/d/14ajDDVEDwscPONzy1BrnSu5s6NvCuk3C=w1000", "https://lh3.googleusercontent.com/d/1T4Lpk2XY4e6KsJHYIvcx1nHDIJmjOKdz=w1000", "https://lh3.googleusercontent.com/d/1aIW9Fm8KAd_0EyTvV5htI_8m4MUSGOPq=w1000", "https://lh3.googleusercontent.com/d/1CObSqiNQDcbViRvWyOlmuP0AiYdA1xIH=w1000", "https://lh3.googleusercontent.com/d/18js5cHkty0K0VQnqGWyx8ZFkbkg2SvGo=w1000", "https://lh3.googleusercontent.com/d/1GCzfV2AIU644ICGBrOZUXCEA0Mdmd6aR=w1000"], "0818": [], "0831": [], "0923": ["https://lh3.googleusercontent.com/d/1KQ0Qdd8Ik79rBz_2h_BdXSD1CqSRYdBD=w1000", "https://lh3.googleusercontent.com/d/16A61qw9jhVVQ6rifgqiUOVIcvTSoFuYS=w1000", "https://lh3.googleusercontent.com/d/1oire17NXSKYzjMU0QZgYvkswfuNsf-2H=w1000", "https://lh3.googleusercontent.com/d/15UpA9TPQvkGaBqJYyEwrTmnjbM_-JfVn=w1000", "https://lh3.googleusercontent.com/d/1PYwekND2kkZaKZBo-SGrmk7bpS1dOyAi=w1000", "https://lh3.googleusercontent.com/d/1W9axZY2mdYAH85Gj4RXLdAug4OvF-v2J=w1000"]}}, {"num": "07", "name": "有田咖啡", "intro": "由一甲子老中藥行與農舍老屋活化改建，坐落於田中央，是東海客庄最受歡迎的人文休憩與農村對話客廳。", "phenology": "四季坐看窗外稻田變化，春季綠油油秧苗、夏日微風拂過稻浪、秋日金黃滿穗收割，是體驗田園節氣步調的首選。", "has_aerial": true, "default_mode": "aerial", "cover_url": "https://lh3.googleusercontent.com/d/15jz79qt0XS9g_MDlKuFl8cAgQcMzu-BM=w1000", "aerial": {"1222": "", "0122": "https://lh3.googleusercontent.com/d/1P9Adn5LE02D1v4R1KOTnIcBnOsJb-BOz", "0319": "https://lh3.googleusercontent.com/d/1bh7fhHXwfABZNFwPxEnoZmlRTrlfapfG", "0421": "https://lh3.googleusercontent.com/d/1lkXAhTk89wBHYqo5Yzrci5gdCV4RH75T", "0521": "https://lh3.googleusercontent.com/d/10mv2EMNQD4RQBlUnrrFapRZgjMORsezD", "0625": "https://lh3.googleusercontent.com/d/1Ncj48LO6RrWzY4Gi_308H5KUDUdj8cAm", "0716": "https://lh3.googleusercontent.com/d/13DlMyuz7N9MbECrT121b18fmdXtVwN0M", "0818": "", "0831": "https://lh3.googleusercontent.com/d/1Cr5EgbuHXn793xqVlBeABqUJOZ9tqFW6", "0923": ""}, "ground": {"1222": "https://lh3.googleusercontent.com/d/1qG3BVX0sj7E3ioNgIzt9W-TR4yOzqDkS", "0122": "https://lh3.googleusercontent.com/d/1iYRPIowaEU0bQ2f0cq5wQAh2hfNHep-7", "0319": "https://lh3.googleusercontent.com/d/1ER112trsoQBimN4ja8FYvnfOS1-OMOdZ", "0421": "https://lh3.googleusercontent.com/d/1TF3U70Q5nn3rm_biRk61-odtR1Wb9Feq", "0521": "https://lh3.googleusercontent.com/d/1TYUWFHbjyOsZkxXLmFiMKQj-W8gLHUol", "0625": "https://lh3.googleusercontent.com/d/1LZapWU5vTfZP8IrKZiSS71E_USqGEzPT", "0716": "", "0818": "https://lh3.googleusercontent.com/d/1b0GAQaQ3NoNLWzfpuZMwqVUsofD0Zx73", "0831": "", "0923": ""}, "gis": {"1222": [], "0122": ["https://lh3.googleusercontent.com/d/15jz79qt0XS9g_MDlKuFl8cAgQcMzu-BM=w1000", "https://lh3.googleusercontent.com/d/1ZVFKmm-53gZ_-xdQ5keoWHzOYVkielq5=w1000", "https://lh3.googleusercontent.com/d/1zv1Vtomt_EuW6RLDwDRG9rmAvk5UMDfi=w1000", "https://lh3.googleusercontent.com/d/1FZDPReup9IrMdLFSltf87BeDH3u9K208=w1000", "https://lh3.googleusercontent.com/d/1vmhW0CmkX5TnNvP8LsS-8lkmwDusvmFW=w1000", "https://lh3.googleusercontent.com/d/1XYbDeRNM--34x9RRnynk5zIOewYj1Zb2=w1000"], "0319": ["https://lh3.googleusercontent.com/d/1G3YT4Kdo_SnlJqfoVHkEzeGNWMIGI8VO=w1000", "https://lh3.googleusercontent.com/d/1IDq4BYzKZKtLU0_0yDPNG4cUphWX-2os=w1000", "https://lh3.googleusercontent.com/d/1l9nBsPCZzDwMzZ5R-5qvWK3D2vEIHfBH=w1000", "https://lh3.googleusercontent.com/d/1sPz98uaWWBFxrnTNjg6KIhSuJD14T6PS=w1000", "https://lh3.googleusercontent.com/d/1vIgMUt1p-Twu1yG3bW3A05McGA-_Kwlw=w1000", "https://lh3.googleusercontent.com/d/1Dsltc1YYNQZcwXucSU1Vo-rgWMLpJxIS=w1000"], "0421": ["https://lh3.googleusercontent.com/d/1WwaI5MBs7noFP0jXOL8RrWTb788NBqo6=w1000", "https://lh3.googleusercontent.com/d/1dypsv3pfKEmazp-fd7xoILfaxB3h0pg3=w1000", "https://lh3.googleusercontent.com/d/19viTLY-kWlZSE_nv5f6-qqH0w0or0RvU=w1000", "https://lh3.googleusercontent.com/d/11HSNO2LJyScEq_67iLw8EPUC3GxhyDJ-=w1000", "https://lh3.googleusercontent.com/d/1wlU32hYs9RyocoIkOkIL5DVp4fjXvQnV=w1000", "https://lh3.googleusercontent.com/d/1VBzCTGmaFw5xB0zBj17cezjJcmWFNE9E=w1000"], "0521": ["https://lh3.googleusercontent.com/d/1il_XpkPa4JsESNPmLARIrF9XV07W6-xc=w1000", "https://lh3.googleusercontent.com/d/1z_o6V1kJVL_e8OD31s6Md4LVECfSMrWt=w1000", "https://lh3.googleusercontent.com/d/1Nu0lMkeHZwwC9pzO5JVtAhxqeg15Aetl=w1000", "https://lh3.googleusercontent.com/d/1E3vAbZmJZ7VIUKfkzhz_FEQ3YylMtReo=w1000", "https://lh3.googleusercontent.com/d/1DCTffuK9_cyCxsphAM9GDWTIvGKVp7LD=w1000", "https://lh3.googleusercontent.com/d/1BpXqYJfylGDWv3nv_okZKYAUJ146RlLM=w1000"], "0625": ["https://lh3.googleusercontent.com/d/1Kgp1qT_50oy45RY2yghQmTDOnm6cjEAq=w1000", "https://lh3.googleusercontent.com/d/1MAlFHYGIqG6IorDifZ7i-0Q7bUODeyNl=w1000", "https://lh3.googleusercontent.com/d/1DyImGzIigpQ9ZVzdD576E-ThuPHKK_C2=w1000", "https://lh3.googleusercontent.com/d/1JrF2n6BYT9NdvThTbnRICFa2oC8IVX68=w1000", "https://lh3.googleusercontent.com/d/1XrBWAmyupO0nZXbOlpgH2S2qy0KrK5qW=w1000", "https://lh3.googleusercontent.com/d/1FYI-vi36DYaGuFvoL_VGMZID4emIvW-4=w1000"], "0716": ["https://lh3.googleusercontent.com/d/124m1pDqvmT2koPmU-VHSuFTEquDYUkiH=w1000", "https://lh3.googleusercontent.com/d/1k4W-2bx1OXfKy8B4wCIDtZmrReBXfFQR=w1000", "https://lh3.googleusercontent.com/d/10_laAz3-vBZGxpIBd9QaQk3pyVu1FDvy=w1000", "https://lh3.googleusercontent.com/d/1itT1-rURszYmac0oVvJj_oD_ZQhGesCv=w1000", "https://lh3.googleusercontent.com/d/1e_6squ0BK4juM07xdlakQYZ0cj_ycNgV=w1000", "https://lh3.googleusercontent.com/d/1HxH7MEkmFQe-oTVcwh-0SZ-B2jnygfqy=w1000"], "0818": [], "0831": [], "0923": ["https://lh3.googleusercontent.com/d/1HA3EQp-FVkOqHJKQjaUT8bCAcldGVEg2=w1000", "https://lh3.googleusercontent.com/d/1Wez91-4zFyNUsbNLSAKRVtus_Crw3Da-=w1000", "https://lh3.googleusercontent.com/d/1NqXOhUqrO_injQX4aqmFUI0XNStV0pE9=w1000", "https://lh3.googleusercontent.com/d/1SNJSwl7xHjmyncirgEvsGwmwWprFx2Wd=w1000", "https://lh3.googleusercontent.com/d/1hw2dC_nvw45zviLhoUqRSOaQ2uml7ERS=w1000", "https://lh3.googleusercontent.com/d/1zgM5D5WFO2ox7qfsYTOx3o_KpPJtZqKF=w1000"]}}, {"num": "08", "name": "自然想想田", "intro": "東南田區的生態自然耕作試驗田，提倡不施農藥化肥，營造田埂花草共生環境，探索人與土地永續相處之可能。", "phenology": "四季輪作多樣性雜糧與綠肥植物，春季百花齊放引來蜜蜂彩蝶，夏秋季則見泥鰍、青蛙跳躍於水田中。", "has_aerial": true, "default_mode": "aerial", "cover_url": "https://lh3.googleusercontent.com/d/1URdw0Zc6-p1CxVXPxvMbKeMgPSqyhHDC=w1000", "aerial": {"1222": "", "0122": "https://lh3.googleusercontent.com/d/1EbMyzihJT2CNqxEvxLku7EH0ovWFHSi7", "0319": "https://lh3.googleusercontent.com/d/1bqtgevUNuVAUQXv5ikNXiFr46E7dAmvi", "0421": "https://lh3.googleusercontent.com/d/10jZGruQZ_idlv4WVYjsY8m3yV26I92Pr", "0521": "https://lh3.googleusercontent.com/d/19Zl-pTvig9qMhUYpOawo2ez2FONI0Cju", "0625": "https://lh3.googleusercontent.com/d/1jluELKp_KgjCf36D0LW6GUvTOLsvpY-R", "0716": "https://lh3.googleusercontent.com/d/1ByzoE8DHtflRbDji1qtTMiYbjUnMRCLU", "0818": "", "0831": "https://lh3.googleusercontent.com/d/1M-rnTZq90nYGSxX6_S2LANeQlRxNmPj3", "0923": "https://lh3.googleusercontent.com/d/1rgUyreCkQn7Sla9nMW9fyAkBAuIJbFgs"}, "ground": {"1222": "https://lh3.googleusercontent.com/d/1manpo4HbcMG3mnz040LHRvP9Giz4E9tN", "0122": "https://lh3.googleusercontent.com/d/17thqVhB-VL24HNK3dLCkeKspPGtLVuse", "0319": "https://lh3.googleusercontent.com/d/1SrMsOZ9wRyTKEZs18L747uCnSKkKZs2V", "0421": "https://lh3.googleusercontent.com/d/1eoU1Gthx6Dx0kjAJQK93TjctJfD7B2wD", "0521": "https://lh3.googleusercontent.com/d/12642Ud1Kmlcm66ffIu6OGSRm400qnmXg", "0625": "https://lh3.googleusercontent.com/d/1i-zxBqYq9qzpAqOgdpygaZT6kYy_gq7p", "0716": "", "0818": "https://lh3.googleusercontent.com/d/1uqs9TfDnQOUQCMaLBmyD4LMNGwiB_Xgc", "0831": "", "0923": ""}, "gis": {"1222": [], "0122": ["https://lh3.googleusercontent.com/d/1URdw0Zc6-p1CxVXPxvMbKeMgPSqyhHDC=w1000", "https://lh3.googleusercontent.com/d/1u9htW0VFAzU843f0g1pxOdV44Td9z3c4=w1000", "https://lh3.googleusercontent.com/d/1lf9t3a0EEspo7471aAwpWm_gSxLgvo0e=w1000", "https://lh3.googleusercontent.com/d/1RgXLdov5mm4clLB7xpr-sF8Camtl4De0=w1000", "https://lh3.googleusercontent.com/d/1XE2tOE5r8A_VoL54RnSY0JTSNrjA0a2L=w1000"], "0319": [], "0421": [], "0521": [], "0625": [], "0716": [], "0818": [], "0831": [], "0923": []}}];
+    
+    const TERMS = [
+      { key: "1222", name: "冬至", date: "12/22" },
+      { key: "0122", name: "大寒", date: "01/22" },
+      { key: "0319", name: "春分", date: "03/19" },
+      { key: "0421", name: "穀雨", date: "04/21" },
+      { key: "0521", name: "小滿", date: "05/21" },
+      { key: "0625", name: "夏至", date: "06/25" },
+      { key: "0716", name: "小暑", date: "07/16" },
+      { key: "0818", name: "處暑", date: "08/18" },
+      { key: "0831", name: "白露", date: "08/31" },
+      { key: "0923", name: "秋分", date: "09/23" }
+    ];
+
+    let currentSpotIndex = 0;
+    let currentMode = "aerial";
+    let currentTermKey = "0122";
+    let pannellumViewer = null;
+
+    function init() {
+      renderMapSpotsGrid();
+      populateSpotSelector();
+      loadSpot(0);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.remove('hidden');
+
+      const tabs = ['home', 'map', 'aerial', 'spots', 'water', 'trails', 'food'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('nav-' + t);
+        if (btn) {
+          if (t === tabId) {
+            btn.className = "nav-link active";
+          } else {
+            btn.className = "nav-link";
+          }
+        }
+      });
+
+      if (tabId === 'spots' && !pannellumViewer) {
+        setTimeout(renderViewer, 200);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderMapSpotsGrid() {
+      const container = document.getElementById('map-spots-grid');
+      if (!container) return;
+      container.innerHTML = '';
+      SPOTS.forEach((s, idx) => {
+        const card = document.createElement('div');
+        card.className = "card-border overflow-hidden cursor-pointer flex flex-col group bg-white shadow-sm";
+        card.onclick = () => {
+          changeSpot(idx);
+          switchTab('spots');
+        };
+        card.innerHTML = `
+          <div class="h-36 bg-gray-100 relative overflow-hidden">
+            <span class="absolute top-2 left-2 z-10 bg-gray-900 text-white text-[10px] font-bold px-2 py-0.5 rounded">定點 ${s.num}</span>
+            <img src="${s.cover_url}" alt="${s.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+          </div>
+          <div class="p-4 flex-1 flex flex-col justify-between space-y-2">
+            <div>
+              <div class="font-bold text-sm text-gray-900 group-hover:text-blue-600 transition">${s.num}. ${s.name}</div>
+              <p class="text-gray-500 text-xs line-clamp-2 mt-1 leading-relaxed">${s.intro}</p>
+            </div>
+            <div class="pt-2 border-t border-gray-100 flex justify-between items-center text-xs font-semibold text-gray-800">
+              <span>探索 24 節氣時光機</span>
+              <span>↗</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function populateSpotSelector() {
+      const sel = document.getElementById('spot-selector');
+      if (!sel) return;
+      sel.innerHTML = '';
+      SPOTS.forEach((s, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.innerText = `${s.num}. ${s.name}`;
+        sel.appendChild(opt);
+      });
+    }
+
+    function changeSpot(idx) {
+      currentSpotIndex = parseInt(idx);
+      const sel = document.getElementById('spot-selector');
+      if (sel) sel.value = currentSpotIndex;
+      const spot = SPOTS[currentSpotIndex];
+
+      if (!spot.has_aerial) {
+        currentMode = 'ground';
+      } else {
+        currentMode = spot.default_mode || 'aerial';
+      }
+      
+      updateModeButtons();
+
+      document.getElementById('spot-badge').innerText = `定點 ${spot.num}`;
+      document.getElementById('spot-title').innerText = `${spot.num}. ${spot.name}`;
+      document.getElementById('spot-intro').innerText = spot.intro;
+      document.getElementById('spot-phenology').innerText = spot.phenology;
+
+      if (!spot[currentMode][currentTermKey]) {
+        for (const t of TERMS) {
+          if (spot[currentMode][t.key]) {
+            currentTermKey = t.key;
+            break;
+          }
+        }
+      }
+
+      renderTimeline();
+      renderViewer();
+      renderGISGallery();
+    }
+
+    function switchViewerMode(mode) {
+      const spot = SPOTS[currentSpotIndex];
+      if (mode === 'aerial' && !spot.has_aerial) return;
+      currentMode = mode;
+      updateModeButtons();
+      
+      if (!spot[currentMode][currentTermKey]) {
+        for (const t of TERMS) {
+          if (spot[currentMode][t.key]) {
+            currentTermKey = t.key;
+            break;
+          }
+        }
+      }
+      renderTimeline();
+      renderViewer();
+    }
+
+    function updateModeButtons() {
+      const spot = SPOTS[currentSpotIndex];
+      const btnAerial = document.getElementById('btn-mode-aerial');
+      const btnGround = document.getElementById('btn-mode-ground');
+
+      if (!spot.has_aerial) {
+        btnAerial.classList.add('hidden');
+      } else {
+        btnAerial.classList.remove('hidden');
+      }
+
+      if (currentMode === 'aerial') {
+        btnAerial.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-gray-800 text-white transition";
+        btnGround.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 transition";
+      } else {
+        btnGround.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-gray-800 text-white transition";
+        btnAerial.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 transition";
+      }
+    }
+
+    function renderTimeline() {
+      const container = document.getElementById('timeline-buttons');
+      if (!container) return;
+      container.innerHTML = '';
+      const spot = SPOTS[currentSpotIndex];
+
+      TERMS.forEach(t => {
+        const hasUrl = spot[currentMode] && spot[currentMode][t.key];
+        const btn = document.createElement('button');
+        btn.className = `term-btn px-3 py-1.5 rounded border border-gray-700 bg-gray-800 text-gray-300 text-xs flex flex-col items-center flex-shrink-0 transition ${t.key === currentTermKey ? 'active' : ''} ${!hasUrl ? 'disabled' : ''}`;
+        btn.innerHTML = `<span class="font-bold">${t.name}</span><span class="text-[10px] opacity-70">${t.date}</span>`;
+        if (hasUrl) {
+          btn.onclick = () => {
+            currentTermKey = t.key;
+            renderTimeline();
+            renderViewer();
+            renderGISGallery();
+          };
+        }
+        container.appendChild(btn);
+      });
+    }
+
+    function renderViewer() {
+      const spot = SPOTS[currentSpotIndex];
+      const photoUrl = spot[currentMode] ? spot[currentMode][currentTermKey] : null;
+      const termObj = TERMS.find(t => t.key === currentTermKey) || { name: currentTermKey };
+      const modeText = currentMode === 'aerial' ? '🚁 空拍 360°' : '🚶 地面 360°';
+
+      document.getElementById('viewer-term-label').innerText = `${spot.name}・${termObj.name}觀測紀錄 (${modeText}) - 拖曳旋轉 / 滾輪縮放`;
+
+      if (!photoUrl) {
+        document.getElementById('panorama-container').innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">此節氣尚無全景紀錄</div>';
+        return;
+      }
+
+      if (pannellumViewer) {
+        try { pannellumViewer.destroy(); } catch(e){}
+      }
+
+      pannellumViewer = pannellum.viewer('panorama-container', {
+        type: 'equirectangular',
+        panorama: photoUrl,
+        autoLoad: true,
+        autoRotate: -1.0,
+        compass: true,
+        showZoomCtrl: true,
+        showFullscreenCtrl: true,
+        hfov: 100,
+        pitch: currentMode === 'aerial' ? -15 : 0
+      });
+    }
+
+    function renderGISGallery() {
+      const container = document.getElementById('gis-photos-grid');
+      if (!container) return;
+      container.innerHTML = '';
+      const spot = SPOTS[currentSpotIndex];
+      const urls = (spot.gis && spot.gis[currentTermKey]) ? spot.gis[currentTermKey] : [];
+
+      if (urls.length === 0) {
+        container.innerHTML = '<div class="col-span-full py-4 text-center text-xs text-gray-400">此節氣暫無平面特寫照片</div>';
+        return;
+      }
+
+      urls.forEach(u => {
+        const img = document.createElement('img');
+        img.src = u;
+        img.className = "w-full h-20 object-cover rounded border border-gray-300 hover:scale-105 hover:border-gray-800 transition cursor-pointer";
+        img.title = "點擊檢視大圖";
+        img.onclick = () => window.open(u, '_blank');
+        container.appendChild(img);
+      });
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
