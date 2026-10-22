@@ -8,6 +8,9 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
+    <!-- Leaflet Interactive Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- Pannellum 360 Viewer CSS & JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
@@ -95,6 +98,38 @@
 
     .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  
+    /* GIS 八大定點醒目標記樣式 */
+    .gis-pin-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 13px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 0 3px #ffffff;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .gis-pin-marker:hover {
+      transform: scale(1.22);
+      z-index: 1000 !important;
+    }
+    .gis-pulse {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      animation: pinPulse 2s infinite;
+      pointer-events: none;
+    }
+    @keyframes pinPulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      70% { transform: scale(2.2); opacity: 0; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -271,29 +306,273 @@
       </div>
     </div>
 
-    <!-- ==================== TAB 2: GIS (空間地圖) ==================== -->
+        <!-- ==================== TAB 2: GIS (空間地圖與璞玉沿革) ==================== -->
     <div id="tab-map" class="tab-pane hidden">
       <!-- 標頭圖 2: GIS 專用標頭 -->
       <div class="site-banner" style="background-image: url('https://lh3.googleusercontent.com/d/1Z9VpkAPY5TRdY0esWH69lrlglQdA5hW1=w2000');">
-        <h1 class="banner-title">GIS 空間地理資訊</h1>
+        <h1 class="banner-title">GIS 空間地理資訊與璞玉計畫</h1>
       </div>
 
-      <div class="max-w-6xl mx-auto px-4 py-10 space-y-8 content-box">
-        <div>
-          <h2 class="text-2xl font-bold text-gray-900">走讀東海 GIS 主地圖</h2>
-          <p class="text-gray-500 text-sm mt-1">整合 Google 我的地圖（ID：12ZHd2tzGFirX3w6oQZ21Tb2FEZNJCDE），收錄完整水圳灌溉動線與踏查點位</p>
+      <div class="max-w-6xl mx-auto px-4 py-10 space-y-12 content-box">
+        
+        <!-- 頂部說明與地圖模式切換 -->
+        <div class="space-y-4">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <div class="text-xs font-bold text-emerald-700 tracking-wider uppercase">Spatial Information & Historical Preservation</div>
+              <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mt-1">走讀東海 GIS 空間地圖與地景座標</h2>
+              <p class="text-gray-600 text-sm mt-1.5 leading-relaxed max-w-3xl">
+                地圖清楚標示本校踏查之 <span class="font-bold text-gray-900">8 大核心觀測定點</span> 及 <span class="font-bold text-red-600">璞玉計畫（台灣知識經濟旗艦園區）法定範圍界線</span>，紀錄面臨高科技徵收危機下的珍貴水文與良田地景。
+              </p>
+            </div>
+            
+            <!-- 視圖切換按鈕 -->
+            <div class="flex items-center gap-2 bg-gray-100 p-1.5 rounded-lg border border-gray-200 flex-shrink-0">
+              <button id="btn-view-leaflet" onclick="switchMapView('leaflet')" class="px-3.5 py-1.5 rounded text-xs font-bold bg-gray-900 text-white shadow-sm transition">
+                📍 8 大定點高互動地圖
+              </button>
+              <button id="btn-view-mymap" onclick="switchMapView('mymap')" class="px-3.5 py-1.5 rounded text-xs font-bold bg-white text-gray-700 hover:bg-gray-200 transition">
+                🗺️ Google 我的地圖 (原圖)
+              </button>
+            </div>
+          </div>
+
+          <!-- 8 大定點快速定位標籤列 (Chips) -->
+          <div class="bg-gray-50 p-3.5 rounded-lg border border-gray-200 flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold text-gray-500 mr-1 flex items-center gap-1">
+              <span>🎯</span> 點位快速巡航：
+            </span>
+            <button onclick="flyToSpot(0)" class="px-2.5 py-1 rounded bg-white border border-emerald-300 hover:bg-emerald-50 text-xs font-bold text-emerald-800 transition shadow-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 01 覓境咖啡
+            </button>
+            <button onclick="flyToSpot(1)" class="px-2.5 py-1 rounded bg-white border border-amber-300 hover:bg-amber-50 text-xs font-bold text-amber-800 transition shadow-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span> 02 金城武樹
+            </button>
+            <button onclick="flyToSpot(2)" class="px-2.5 py-1 rounded bg-white border border-blue-300 hover:bg-blue-50 text-xs font-bold text-blue-800 transition shadow-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-800 transition"></span> 03 智慧稻田
+            </button>
+            <button onclick="flyToSpot(3)" class="px-2.5 py-1 rounded bg-white border border-pink-300 hover:bg-pink-50 text-xs font-bold text-pink-800 transition shadow-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-pink-500"></span> 04 甘蔗屋
+            </button>
+            <button onclick="flyToSpot(4)" class="px-2.5 py-1 rounded bg-white border border-purple-300 hover:bg-purple-50 text-xs font-bold text-purple-800 transition shadow-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-purple-500"></span> 05 瑞招農場
+            </button>
+            <button onclick="flyToSpot(5)" class="px-2.5 py-1 rounded bg-white border border-teal-300 hover:bg-teal-50 text-xs font-bold text-teal-800 transition shadow-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-teal-500"></span> 06 有田咖啡
+            </button>
+            <button onclick="flyToSpot(6)" class="px-2.5 py-1 rounded bg-white border border-orange-300 hover:bg-orange-50 text-xs font-bold text-orange-800 transition shadow-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-orange-500"></span> 07 鄭家土埆厝
+            </button>
+            <button onclick="flyToSpot(7)" class="px-2.5 py-1 rounded bg-white border border-lime-300 hover:bg-lime-50 text-xs font-bold text-lime-800 transition shadow-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-lime-500"></span> 08 自然想想田
+            </button>
+          </div>
         </div>
 
-        <!-- 滿版地圖嵌入 -->
-        <div class="rounded-lg overflow-hidden border border-gray-300 shadow-md">
-          <iframe src="https://www.google.com/maps/d/embed?mid=12ZHd2tzGFirX3w6oQZ21Tb2FEZNJCDE&ehbc=2E312F" width="100%" height="560" class="w-full"></iframe>
+        <!-- 滿版地圖視窗容器 -->
+        <div class="rounded-xl overflow-hidden border border-gray-300 shadow-md bg-gray-100 relative">
+          
+          <!-- 地圖 1: Leaflet 8大醒目定點地圖 -->
+          <div id="leaflet-map-wrapper" class="w-full h-[580px] relative">
+            <div id="leaflet-map" class="w-full h-full z-10"></div>
+            <!-- 地圖圖例 -->
+            <div class="absolute bottom-4 right-4 z-20 bg-white/95 backdrop-blur-sm p-3 rounded-lg border border-gray-300 shadow-md text-xs space-y-1.5 pointer-events-auto max-w-xs">
+              <div class="font-bold text-gray-800 border-b pb-1">圖例說明 (Map Legend)</div>
+              <div class="flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center">1</span>
+                <span class="text-gray-700">8 大觀測點位（點擊看特寫並跳轉時光機）</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-4 h-1 border-b-2 border-dashed border-red-500"></span>
+                <span class="text-red-700 font-semibold">璞玉計畫（台知園區）447公頃範圍</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 地圖 2: Google 我的地圖 (iframe 原始圖層) -->
+          <div id="google-mymap-wrapper" class="w-full h-[580px] hidden">
+            <iframe src="https://www.google.com/maps/d/embed?mid=12ZHd2tzGFirX3w6oQZ21Tb2FEZNJCDE&ehbc=2E312F" width="100%" height="100%" class="w-full h-full border-0"></iframe>
+          </div>
         </div>
 
-        <!-- 8 大定點圖卡快速索引 -->
+        <!-- ==================== 專題區塊 1: 璞玉計畫空間範圍與地景特質 ==================== -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 md:p-8 space-y-6 shadow-xs">
+          <div class="border-b border-gray-100 pb-4">
+            <div class="flex items-center gap-2 text-xs font-bold text-red-600 tracking-wider uppercase">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span>
+              Plan Boundary & Geographic Context
+            </div>
+            <h3 class="text-xl md:text-2xl font-bold text-gray-900 mt-1">
+              📍 璞玉計畫（台灣知識經濟旗艦園區）地理空間範圍
+            </h3>
+            <p class="text-gray-500 text-sm mt-1">
+              如上方地圖中已繪製標示之紅色多邊形外框，即為新竹縣政府規劃之「璞玉計畫 / 台知園區」法定徵收邊界。
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 四至範圍說明 -->
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
+              <h4 class="font-bold text-gray-900 text-base flex items-center gap-2">
+                <span class="text-red-600">🧭</span> 計畫四至地理邊界
+              </h4>
+              <ul class="text-xs text-gray-700 space-y-2 leading-relaxed">
+                <li class="flex items-start gap-2">
+                  <span class="font-bold text-gray-900 min-w-[3rem]">東界：</span>
+                  <span>新竹縣芎林鄉下山村交界處，鄰接國道三號竹林交流道特定區。</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-bold text-gray-900 min-w-[3rem]">西界：</span>
+                  <span>竹北市自強北路及高鐵新竹車站特定區，緊鄰高樓林立的生醫園區與住宅特區。</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-bold text-gray-900 min-w-[3rem]">南界：</span>
+                  <span>頭前溪北岸防汛道路（興隆路五段沿線），隔溪與新竹市千甲、柯子湖溪口相對。</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-bold text-gray-900 min-w-[3rem]">北界：</span>
+                  <span>犁頭山山腳與文山路一帶，依循犁頭山脈南麓山勢等高線劃分。</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 土地面積與分佈 -->
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
+              <h4 class="font-bold text-gray-900 text-base flex items-center gap-2">
+                <span class="text-emerald-700">🌾</span> 土地規模與行政分區構成
+              </h4>
+              <p class="text-xs text-gray-700 leading-relaxed">
+                計畫規劃總面積約 <span class="font-bold text-red-600 text-sm">447 公頃</span>，包含：
+              </p>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="bg-white p-2.5 rounded border border-gray-200">
+                  <div class="font-bold text-gray-900">竹北市境內：約 397 公頃</div>
+                  <div class="text-gray-500 text-[11px] mt-0.5">佔全區近 89%，涵蓋東海里全境及十興里、隘口里部分農田。</div>
+                </div>
+                <div class="bg-white p-2.5 rounded border border-gray-200">
+                  <div class="font-bold text-gray-900">芎林鄉境內：約 50 公頃</div>
+                  <div class="text-gray-500 text-[11px] mt-0.5">位於下山村西側，多為相連之優良水稻耕作平原。</div>
+                </div>
+              </div>
+              <p class="text-xs text-gray-600 leading-relaxed pt-1">
+                此範圍為竹北僅存最完整之一級特定農業區，舊港圳與犁頭山溪穿流其間，孕育了獲獎無數的「桃園3號」冠軍香米與豐富的客庄聚落水利文脈。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== 專題區塊 2: 璞玉計畫演變為台知園區的歷史沿革 ==================== -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 md:p-8 space-y-6 shadow-xs">
+          <div class="border-b border-gray-100 pb-4">
+            <div class="flex items-center gap-2 text-xs font-bold text-blue-700 tracking-wider uppercase">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+              Historical Timeline & Evolution
+            </div>
+            <h3 class="text-xl md:text-2xl font-bold text-gray-900 mt-1">
+              📜 從「璞玉計畫」到「台灣知識經濟旗艦園區」的時代沿革
+            </h3>
+            <p class="text-gray-500 text-sm mt-1">
+              歷經二十餘年的政策演變、土地徵收爭議與都市計畫審議，東海聚落見證了台灣高科技擴張與農村土地正義的歷史縮影。
+            </p>
+          </div>
+
+          <!-- 歷史時間軸卡片 -->
+          <div class="space-y-4">
+            
+            <!-- 階段 1 -->
+            <div class="flex flex-col md:flex-row gap-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+              <div class="md:w-48 flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-blue-100 text-blue-800 text-xs font-bold">1999 ～ 2001 (民國88～90年)</span>
+                <div class="font-bold text-gray-900 text-sm mt-1">【萌芽期】綠色大學城</div>
+              </div>
+              <div class="text-xs text-gray-700 leading-relaxed space-y-1">
+                <p>
+                  新竹縣前縣長林光華任內提出「璞玉計畫」，比擬竹北東側未開發的良田為一塊「未經雕琢之璞玉」。
+                </p>
+                <p class="text-gray-500">
+                  核心構想為結合國立交通大學竹北校區設立，規劃「綠色產學大學城」，旨在融合客家傳統田園文化與高科技研發，此時期規模較小、爭議尚屬醞釀階段。
+                </p>
+              </div>
+            </div>
+
+            <!-- 階段 2 -->
+            <div class="flex flex-col md:flex-row gap-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+              <div class="md:w-48 flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-red-100 text-red-800 text-xs font-bold">2004 年 (民國93年)</span>
+                <div class="font-bold text-gray-900 text-sm mt-1">【更名】國家重大建設</div>
+              </div>
+              <div class="text-xs text-gray-700 leading-relaxed space-y-1">
+                <p>
+                  行政院經建會正式通過並核定為「國家重大建設計畫」，正式更名為「<span class="font-bold text-gray-900">台灣知識經濟旗艦園區</span>」（簡稱台知園區）。
+                </p>
+                <p class="text-gray-500">
+                  開發性質大幅轉向高科技產專區：包括交大竹北園區（33公頃）、IC 設計與生醫國際研發專區（62公頃），並規劃超過 300 公頃的住商用地，開發模式正式定調為「<span class="font-bold text-red-700">全區區段徵收</span>」，為後續重大爭議埋下導火線。
+                </p>
+              </div>
+            </div>
+
+            <!-- 階段 3 -->
+            <div class="flex flex-col md:flex-row gap-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+              <div class="md:w-48 flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-amber-100 text-amber-800 text-xs font-bold">2008 ～ 2015 (民國97～104年)</span>
+                <div class="font-bold text-gray-900 text-sm mt-1">【爭議激化】救璞玉公民行動</div>
+              </div>
+              <div class="text-xs text-gray-700 leading-relaxed space-y-1">
+                <p>
+                  新竹縣府積極推動都市計畫報核，但高達 447 公頃的區段徵收引發在地世居客家農民強烈反彈，擔心「滅農滅村」與百年灌溉水系瓦解。
+                </p>
+                <p class="text-gray-500">
+                  當地居民組成「反對璞玉計畫自救會」，與學者、青年文史工作者串聯發起「救璞玉公民行動」，質疑高科技炒地皮、犧牲糧食安全；同時贊成開發的地主成立促進會，地方陷入長達十數年的對立與抗爭。
+                </p>
+              </div>
+            </div>
+
+            <!-- 階段 4 -->
+            <div class="flex flex-col md:flex-row gap-4 p-4 rounded-lg bg-gray-50 border border-gray-200">
+              <div class="md:w-48 flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-purple-100 text-purple-800 text-xs font-bold">2015 ～ 2021 (民國104～110年)</span>
+                <div class="font-bold text-gray-900 text-sm mt-1">【體制審議】全台首場聽證會</div>
+              </div>
+              <div class="text-xs text-gray-700 leading-relaxed space-y-1">
+                <p>
+                  隨著台灣《土地徵收條例》修法與土地正義思潮，內政部營建署都委會要求嚴格檢驗「公益性與必要性」，並於此案召開全台第一場都市計畫法定聽證會。
+                </p>
+                <p class="text-gray-500">
+                  爭點圍繞於：是否有產業專用區真實迫切需求、特定農業區保留原則、以及非意願被徵收戶之剔除區段徵收機制。全案數度被退回補正，審議進入漫長膠著。
+                </p>
+              </div>
+            </div>
+
+            <!-- 階段 5 -->
+            <div class="flex flex-col md:flex-row gap-4 p-4 rounded-lg bg-emerald-50 border border-emerald-300">
+              <div class="md:w-48 flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-emerald-600 text-white text-xs font-bold">2023 ～ 2026 (民國112～115年)</span>
+                <div class="font-bold text-emerald-900 text-sm mt-1">【地方學行動】數位地景搶救</div>
+              </div>
+              <div class="text-xs text-gray-700 leading-relaxed space-y-1">
+                <p>
+                  竹北市人口暴增突破 21 萬，高樓逼近東海里田埂邊界。面對隨時可能消逝的農村地景，竹北社區大學跳脫口號，主動展開文化搶救行動。
+                </p>
+                <p class="text-emerald-900 font-medium">
+                  河川巡守隊全面升級為「水文地景紀錄行動團隊」，分為空拍組、全景組與 GIS 拍照組，以 24 節氣物候與 GIS 空間座標為經緯，系統性建檔 2025-2026 年完整立體影像，為這片農村土地留下永恆的數位記憶。
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ==================== 專題區塊 3: 8 大定點圖卡快速索引 ==================== -->
         <div class="space-y-4 pt-4">
-          <h3 class="text-xl font-bold text-gray-900 border-l-4 border-gray-800 pl-3">8 大定點快速索引（點擊跳轉 24 節氣時光機）</h3>
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-gray-900 border-l-4 border-gray-800 pl-3">
+              8 大定點圖卡快速索引（點擊跳轉 24 節氣時光機）
+            </h3>
+            <span class="text-xs text-gray-500">點擊任意卡片可立即進入 360° 互動全景觀測</span>
+          </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="map-spots-grid"></div>
         </div>
+
       </div>
     </div>
 
@@ -846,8 +1125,175 @@
 
     function init() {
       renderMapSpotsGrid();
+      if (tabId === 'map') {
+        setTimeout(() => {
+          initLeafletMap();
+          if (leafletMap) leafletMap.invalidateSize();
+        }, 150);
+      }
       populateSpotSelector();
       loadSpot(0);
+    }
+
+    
+    // ==================== GIS 互動地圖 (Leaflet) 與 8 大醒目點位 ====================
+    let leafletMap = null;
+    let leafletMarkers = [];
+
+    const SPOTS_GIS_PINS = [
+      { num: "01", name: "覓境咖啡", lat: 24.79445, lon: 121.05200, color: "#10b981", tag: "頭前溪畔水岸", desc: "走讀南端起點，鄰近頭前溪防汛道路，開闊溪畔水田與休閒聚落。", idx: 0 },
+      { num: "02", name: "金城武樹", lat: 24.81130, lon: 121.04915, color: "#f59e0b", tag: "百年老苦楝", desc: "田埂中心地標百年老苦楝，四週稻田開闊無際，客庄精神象徵。", idx: 1 },
+      { num: "03", name: "智慧稻田", lat: 24.80636, lon: 121.06135, color: "#2563eb", tag: "田守喜冠軍米", desc: "桃園3號香米先鋒，無農藥化肥友善耕作，智慧微氣象與水門監測。", idx: 2 },
+      { num: "04", name: "甘蔗屋", lat: 24.80301, lon: 121.04857, color: "#db2777", tag: "客庄傳統作物", desc: "客庄甘蔗農事記憶基地，甘蔗林與周圍水田構成水旱輪作景觀。", idx: 3 },
+      { num: "05", name: "瑞招農場", lat: 24.81251, lon: 121.05436, color: "#9333ea", tag: "自然建築土角窯", desc: "土角造窯與生態園區，結合食農體驗與傳統客家建築工法傳承。", idx: 4 },
+      { num: "06", name: "有田咖啡", lat: 24.80987, lon: 121.05598, color: "#0d9488", tag: "舊港圳老藥鋪", desc: "中正東路老中藥鋪改建，舊港圳畔的聚落咖啡館，倒映四季稻浪。", idx: 5 },
+      { num: "07", name: "鄭家土埆厝", lat: 24.81489, lon: 121.04812, color: "#ea580c", tag: "百年古厝聚落", desc: "百年客家傳統土埆厝，寬闊曬穀埕與家庭菜園，歷史厚度深沉。", idx: 6 },
+      { num: "08", name: "自然想想田", lat: 24.80704, lon: 121.06111, color: "#65a30d", tag: "自然生態試驗田", desc: "完全不施農藥化肥之生態試驗田，草生田埂，泥鰍青蛙跳躍其間。", idx: 7 }
+    ];
+
+    // 璞玉計畫（台知園區）447公頃規劃邊界
+    const PUYI_BOUNDARY_COORDS = [
+      [24.8185, 121.0314], // 西北界 自強北路/文山路口
+      [24.8198, 121.0410], // 犁頭山山腳北界
+      [24.8172, 121.0427], // 犁頭山溪上游
+      [24.8155, 121.0487], // 北側農田
+      [24.8120, 121.0585], // 東北角 延伸至芎林邊界
+      [24.8065, 121.0665], // 東界 芎林下山村
+      [24.8027, 121.0642], // 東南界 近竹林交流道特區
+      [24.7955, 121.0615], // 南界 頭前溪堤防東端
+      [24.7915, 121.0580], // 頭前溪畔防汛道
+      [24.7911, 121.0563], // 興隆路五段底
+      [24.7986, 121.0399], // 西南界 鄰高鐵新竹特區
+      [24.8080, 121.0350], // 西界 自強北路側
+      [24.8185, 121.0314]  // 閉合
+    ];
+
+    function initLeafletMap() {
+      if (leafletMap) {
+        setTimeout(() => leafletMap.invalidateSize(), 200);
+        return;
+      }
+
+      const mapElem = document.getElementById('leaflet-map');
+      if (!mapElem) return;
+
+      // 建立地圖中心點 (東海里中心)
+      leafletMap = L.map('leaflet-map', {
+        center: [24.8085, 121.0535],
+        zoom: 14,
+        zoomControl: true,
+        scrollWheelZoom: false
+      });
+
+      // 底圖: OpenStreetMap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+      }).addTo(leafletMap);
+
+      // 繪製璞玉計畫（台知園區）447公頃規劃邊界
+      const puyiPolygon = L.polygon(PUYI_BOUNDARY_COORDS, {
+        color: '#dc2626',
+        weight: 3,
+        dashArray: '7, 7',
+        fillColor: '#ef4444',
+        fillOpacity: 0.12
+      }).addTo(leafletMap);
+
+      puyiPolygon.bindTooltip("<b>璞玉計畫（台知園區）法定徵收範圍（約 447 公頃）</b>", {
+        sticky: true,
+        className: 'bg-white px-2 py-1 rounded shadow text-xs font-bold text-red-700'
+      });
+
+      // 繪製 8 大醒目定點 (直徑 38px 發光徽章標記)
+      SPOTS_GIS_PINS.forEach((s) => {
+        const spotData = SPOTS[s.idx];
+        const iconHtml = `
+          <div class="gis-pin-marker" style="background-color: ${s.color}; width: 36px; height: 36px;">
+            <div class="gis-pulse" style="background-color: ${s.color};"></div>
+            <span>${s.num}</span>
+          </div>
+        `;
+
+        const customIcon = L.divIcon({
+          className: 'custom-leaflet-marker',
+          html: iconHtml,
+          iconSize: [36, 36],
+          iconAnchor: [18, 18],
+          popupAnchor: [0, -20]
+        });
+
+        const popupHtml = `
+          <div class="p-1 space-y-2 min-w-[220px]">
+            <div class="h-24 w-full rounded overflow-hidden bg-gray-100">
+              <img src="${spotData.cover_url}" alt="${s.name}" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-gray-900 text-sm">${s.num}. ${s.name}</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded text-white" style="background-color: ${s.color};">${s.tag}</span>
+              </div>
+              <p class="text-xs text-gray-600 mt-1 leading-relaxed">${s.desc}</p>
+            </div>
+            <button onclick="changeSpot(${s.idx}); switchTab('spots');" class="w-full py-1.5 px-3 bg-gray-900 hover:bg-black text-white text-xs font-bold rounded shadow transition flex items-center justify-center gap-1">
+              <span>開啟 360° 時光機</span>
+              <span>↗</span>
+            </button>
+          </div>
+        `;
+
+        const marker = L.marker([s.lat, s.lon], { icon: customIcon }).addTo(leafletMap);
+        marker.bindPopup(popupHtml);
+        marker.bindTooltip(`<b>${s.num}. ${s.name}</b> (${s.tag})`, {
+          direction: 'top',
+          offset: [0, -18],
+          className: 'bg-gray-900 text-white px-2 py-1 rounded text-xs shadow-md font-bold'
+        });
+
+        leafletMarkers.push(marker);
+      });
+
+      // 監聽地圖滾輪開啟/關閉
+      leafletMap.on('focus', () => { leafletMap.scrollWheelZoom.enable(); });
+      leafletMap.on('blur', () => { leafletMap.scrollWheelZoom.disable(); });
+    }
+
+    function flyToSpot(idx) {
+      if (document.getElementById('leaflet-map-wrapper').classList.contains('hidden')) {
+        switchMapView('leaflet');
+      }
+      if (!leafletMap) initLeafletMap();
+      
+      const target = SPOTS_GIS_PINS[idx];
+      if (target && leafletMap) {
+        leafletMap.flyTo([target.lat, target.lon], 16, { duration: 1.2 });
+        setTimeout(() => {
+          if (leafletMarkers[idx]) {
+            leafletMarkers[idx].openPopup();
+          }
+        }, 1300);
+      }
+    }
+
+    function switchMapView(view) {
+      const btnLeaflet = document.getElementById('btn-view-leaflet');
+      const btnMyMap = document.getElementById('btn-view-mymap');
+      const wrapLeaflet = document.getElementById('leaflet-map-wrapper');
+      const wrapMyMap = document.getElementById('google-mymap-wrapper');
+
+      if (view === 'leaflet') {
+        wrapLeaflet.classList.remove('hidden');
+        wrapMyMap.classList.add('hidden');
+        btnLeaflet.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-gray-900 text-white shadow-sm transition";
+        btnMyMap.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-white text-gray-700 hover:bg-gray-200 transition";
+        if (leafletMap) setTimeout(() => leafletMap.invalidateSize(), 200);
+        else initLeafletMap();
+      } else {
+        wrapMyMap.classList.remove('hidden');
+        wrapLeaflet.classList.add('hidden');
+        btnMyMap.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-gray-900 text-white shadow-sm transition";
+        btnLeaflet.className = "px-3.5 py-1.5 rounded text-xs font-bold bg-white text-gray-700 hover:bg-gray-200 transition";
+      }
     }
 
     function switchTab(tabId) {
