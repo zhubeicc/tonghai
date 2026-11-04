@@ -231,6 +231,63 @@
           </div>
         </div>
 
+        <!-- ==================== 東海職人訪談影音專題 ==================== -->
+        <div class="card-border p-6 md:p-8 bg-gradient-to-br from-amber-50/70 via-white to-orange-50/50 rounded-xl border border-amber-200 shadow-sm space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-amber-200 pb-4">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-red-600 animate-pulse"></span>
+              <h3 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <span>🎥</span> 東海職人訪談影音｜獨行有書店長
+              </h3>
+            </div>
+            <span class="text-xs font-bold px-3 py-1 rounded-full bg-red-100 text-red-700 border border-red-200 self-start md:self-auto flex items-center gap-1.5">
+              <span>▶</span> 竹北社區大學地方學影音紀實
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <!-- 影音播放器 (16:9 滿版響應式) -->
+            <div class="lg:col-span-7">
+              <div class="relative w-full aspect-video rounded-xl overflow-hidden shadow-md border border-gray-300 bg-black">
+                <iframe 
+                  class="absolute top-0 left-0 w-full h-full border-0" 
+                  src="https://www.youtube.com/embed/PTfzKtc5Rx8?rel=0" 
+                  title="東海職人訪談-獨行有書店長" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  allowfullscreen>
+                </iframe>
+              </div>
+            </div>
+
+            <!-- 訪談摘要與介紹 -->
+            <div class="lg:col-span-5 space-y-3.5 text-gray-700">
+              <div class="inline-block px-2.5 py-0.5 rounded text-xs font-bold bg-amber-200/80 text-amber-900">
+                東海窟・獨立書店與自然農法
+              </div>
+              <h4 class="text-lg font-bold text-gray-900 leading-snug">
+                「農村的美好，不只是拿來炒地皮，還有太多可以在這片土地發生的美好事情。」
+              </h4>
+              <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                自稱「獨行有書農姑娘」的店長瀞緣，落腳於竹北東海三街（東海窟聚落）。除了在田間開闢獨立書店、選讀好書與陪伴身心，更挽起袖子拿起鋤頭，親身以「自然農法」耕作 4 分地水稻與 5 分地蕎麥，實踐友善大地的日曬糧作。
+              </p>
+              <div class="p-3 bg-white rounded-lg border border-amber-200 text-xs text-gray-600 space-y-1">
+                <div><strong>📍 地理聚落：</strong>竹北市東海窟（東海三街）</div>
+                <div><strong>🌾 耕作實踐：</strong>春耕一期自然農法水稻、秋冬栽種自然農法甜蕎麥</div>
+                <div><strong>🎙️ 企劃製作：</strong>新竹縣竹北社區大學</div>
+              </div>
+              <div class="pt-1 flex flex-wrap gap-2">
+                <a href="https://www.youtube.com/watch?v=PTfzKtc5Rx8" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition shadow-xs">
+                  <span>在 YouTube 上觀看完整訪談</span> ↗
+                </a>
+                <button onclick="switchTab('food')" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-lg bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 text-xs font-bold transition">
+                  <span>查看田間好店導覽</span> →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         <!-- 雙欄踏查按鈕區 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
           <!-- 舊港圳引言 -->
@@ -295,6 +352,7 @@
                 <li>有田咖啡</li>
                 <li>覓境咖啡</li>
                 <li>小藜ㄇㄞˋ本丸</li>
+                <li>獨行有書（獨立書店）</li>
               </ul>
               <div class="pt-2">
                 <button onclick="switchTab('food')" class="text-xs font-bold text-gray-800 hover:underline">查看美食地圖 →</button>
@@ -1049,6 +1107,48 @@
                 </div>
               </div>
             </div>
+
+          <!-- 獨行有書 -->
+          <div class="card-border overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3">
+              <div class="md:col-span-1 bg-black relative flex items-center justify-center">
+                <div class="relative w-full aspect-video md:h-full">
+                  <iframe 
+                    class="w-full h-full border-0 md:absolute md:inset-0" 
+                    src="https://www.youtube.com/embed/PTfzKtc5Rx8?rel=0" 
+                    title="東海職人訪談-獨行有書店長" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                  </iframe>
+                </div>
+              </div>
+              <div class="p-6 md:p-8 md:col-span-2 flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">獨立書店 ✕ 自然農法 ✕ 藝文茶點</span>
+                    <span class="text-xs text-red-600 font-bold flex items-center gap-1">🎥 附社大訪談影音</span>
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-900">獨行有書</h3>
+                  <div class="text-xs text-gray-500 font-medium">📍 地址：新竹縣竹北市東海三街（東海窟聚落）</div>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    「希望在每個人的獨行人生當中，都有書的陪伴。」這座坐落於東海窟綠油油稻田旁的獨立書店，由前社工、自稱「農姑娘」的店長瀞緣創辦。店內選書涵蓋環境生態、農業、社會科學、長者照護與自我關照，並複合「獨行碗櫥」提供茶飲、手炒蕎麥茶與點心。
+                  </p>
+                  <p class="text-gray-600 text-sm leading-relaxed">
+                    瀞緣不僅經營書店，更親身以「自然農法」在東海田間耕耘：春耕第一期栽種自然農法水稻，收成日曬白米與糙米；秋冬則種植甜蕎麥，自製手炒蕎麥茶與蕎麥餅乾，讓造訪者在翻閱書頁之際，也能藉由土地滋味體會農村生活本質。
+                  </p>
+                </div>
+                <div class="pt-2 flex flex-wrap items-center gap-3">
+                  <a href="https://www.youtube.com/watch?v=PTfzKtc5Rx8" target="_blank" rel="noopener noreferrer" class="btn-action text-xs flex items-center gap-1.5 py-2 px-4">
+                    <span>觀看職人訪談影片</span> ↗
+                  </a>
+                  <a href="https://www.facebook.com/search/top?q=%E7%8D%A8%E8%A1%8C%E6%9C%89%E6%9B%B8" target="_blank" rel="noopener noreferrer" class="btn-subtle text-xs flex items-center gap-1.5 py-2 px-4">
+                    <span>獨行有書 Facebook</span> ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
           </div>
 
         </div>
